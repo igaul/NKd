@@ -22,8 +22,8 @@ impl Player {
         Player {
             pos: Vector::new(10,10), //rand or choose xxx
             ch: 'X', // xxx
-            money: 111,
-            energy: 222,
+            money: 50,
+            energy: 80,
             name: "mike".to_string(),// make add
             satchel: super::item_bag::ItemBag::new(),
             color: Color::RED,

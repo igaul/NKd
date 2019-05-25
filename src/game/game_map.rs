@@ -26,27 +26,28 @@ pub struct Tile {
 
 pub struct Map {
     pub map: Vec<Tile>, //???
-    size: i32,
-    x_size: i32,
-    y_size: i32,
+    pub size: Vector,
+    // x_size: i32,
+    // y_size: i32,
 }
 
 impl Map {
-    pub fn new(x: i32, y: i32) -> Map {
+    pub fn new(x: f32, y: f32) -> Map {
             Map{
-                y_size : y,
-                x_size : x,
-                size : y * x,
+                // y_size : y,
+                // x_size : x,
+                // size : y * x,
+                size : Vector::new(x,y),
                 map : Vec::with_capacity((x * y) as usize),
             }
     }
-    pub fn gen(x: i32, y: i32) -> Map {
+    pub fn gen(x: f32, y: f32) -> Map {
         let mut m = Map::new(x,y);
-        for i in 0..x {
-            for j in 0..y {
+        for i in 0..x as i32 {
+            for j in 0..y as i32{
                 let mut t = Tile {
                     pos: Vector::new(i as f32, j as f32),
-                    id: i + (j * x),
+                    id: i + (j * x as i32),
                     ch: 'x',
                     chance_val: 1,
                     fare: 2,
@@ -54,7 +55,7 @@ impl Map {
                     color: Color::BLUE,
 
                 };
-                if i == 0 || i == x - 1 || j == 0 || j == y - 1 {
+                if i == 0 || i == x as i32 - 1 || j == 0 || j == y as i32 - 1 {
                 t.ch = 'O';
             };
             m.map.push(t);

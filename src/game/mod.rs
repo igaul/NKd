@@ -9,7 +9,7 @@ pub mod item_bag;
 
 pub struct Game {
     title: Asset<Image>,
-    map: game_map::Map,
+    pub map: game_map::Map,
     pic: Asset<Image>,
     tileset: Asset<std::collections::HashMap<char, Image>>,
     pub player: player::Player,//vec players
@@ -30,7 +30,7 @@ impl State for Game { //qs state trait handles window rendering
         //pic for experimenting 
         let pic = Asset::new(Image::load("testimg1.png"));
         //map
-        let map = game_map::Map::gen(20,20); // xxx get window size from main?
+        let map = game_map::Map::gen(20.0,20.0); // xxx get window size from main?
         //characters
         //break up into fei
         // let mut players = Vec::<player::Player>::new();
@@ -140,12 +140,12 @@ impl State for Game { //qs state trait handles window rendering
                         Blended(&image, tile.color),
                     );
                 }
-               else { // xxx
-                   if let Some(image) = tileset.get(p_ch) {
+               else { // xxx how to ???
+                   if let Some(image) = tileset.get(&'X') {
                     let pos_px = p_pos.times(tile_size_px);
                     window.draw(
                         &Rectangle::new(offset_px + pos_px, image.area().size()),
-                        Blended(&image, tile.color),
+                        Blended(&image, Color::RED),
                     );
                 }
                } 
@@ -154,19 +154,31 @@ impl State for Game { //qs state trait handles window rendering
             Ok(())
         })?;
 
-        // Draw player
-        let (tileset, p1) = (&mut self.tileset, &self.player);
-        tileset.execute(|tileset| {
-                if let Some(image) = tileset.get(&p1.ch) {
-                    let pos_px = offset_px + p1.pos.times(tile_size_px);
-                    window.draw(
-                        &Rectangle::new(pos_px, image.area().size()),
-                        Blended(&image, p1.color),
-                    );
-            }
-            Ok(())
-        })?;
-
+        let p1 = &self.player;
+        let max_bar = 100.0;
+        let curr_power = p1.energy as f32;
+        let curr_money = p1.money as f32; // xxx make min/max
+        let map_size_px = self.map.size.times(tile_size_px);
+        let power_bar_pos_px = offset_px + Vector::new(map_size_px.x, 0.0);
+        let money_bar_pos_px = offset_px + Vector::new(map_size_px.x, tile_size_px.y + 5.0);
+        //draw max vals shaded
+        window.draw(
+            &Rectangle::new(power_bar_pos_px, (max_bar, tile_size_px.y)),
+            Col(Color::BLUE.with_alpha(0.5)),
+            );
+        window.draw(
+            &Rectangle::new(money_bar_pos_px, (max_bar, tile_size_px.y)),
+            Col(Color::GREEN.with_alpha(0.5)),
+        );
+        //draw curr values on top
+        window.draw(
+            &Rectangle::new(power_bar_pos_px, (curr_power, tile_size_px.y)),
+            Col(Color::BLUE),
+        );
+        window.draw(
+            &Rectangle::new(money_bar_pos_px, (curr_money, tile_size_px.y)),
+            Col(Color::GREEN),
+        );
 
 //
     Ok(())
