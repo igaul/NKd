@@ -38,8 +38,8 @@ impl State for Game { //qs state trait handles window rendering
         let mut player = player::Player::new();
         player.add_tool(&"Blue Towel".to_string()); // ???
 
-        let chs = "xO";
-        let tile_size_px = Vector::new(24, 24);
+        let chs = "xOXo";
+        let tile_size_px = Vector::new(10, 24);
         let tileset = Asset::new(Font::load(font_mono).and_then(move |text| {
             let tiles = text
                 .render(chs, &FontStyle::new(tile_size_px.y, Color::WHITE))
@@ -127,11 +127,12 @@ impl State for Game { //qs state trait handles window rendering
 
 
         // Draw the map
-        let tile_size_px = self.tile_size_px;
+        let tile_size_px = Vector::new(24, 24);
         let offset_px = Vector::new(50, 120);
-        let (tileset, map) = (&mut self.tileset, &self.map);
+        let (tileset, map, p_pos, p_ch) = (&mut self.tileset, &self.map, &self.player.pos, &self.player.ch);
         tileset.execute(|tileset| {
             for tile in map.map.iter() {
+                if tile.pos != *p_pos {
                 if let Some(image) = tileset.get(&tile.ch) {
                     let pos_px = tile.pos.times(tile_size_px);
                     window.draw(
@@ -139,6 +140,16 @@ impl State for Game { //qs state trait handles window rendering
                         Blended(&image, tile.color),
                     );
                 }
+               else { // xxx
+                   if let Some(image) = tileset.get(p_ch) {
+                    let pos_px = p_pos.times(tile_size_px);
+                    window.draw(
+                        &Rectangle::new(offset_px + pos_px, image.area().size()),
+                        Blended(&image, tile.color),
+                    );
+                }
+               } 
+            }
             }
             Ok(())
         })?;

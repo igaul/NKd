@@ -13,19 +13,19 @@ pub struct Player {
     pub money: i32,
     pub energy: i32,
     pub name: String,
-    pub satchel: super::item_bag::Item_Bag,
+    pub satchel: super::item_bag::ItemBag,
     pub color: Color,
 }
 
 impl Player {
     pub fn new() -> Player {
         Player {
-            pos: Vector::new(1,1), //rand or choose xxx
-             ch: 'A', // xxx
+            pos: Vector::new(10,10), //rand or choose xxx
+            ch: 'X', // xxx
             money: 111,
             energy: 222,
             name: "mike".to_string(),// make add
-            satchel: super::item_bag::Item_Bag::new(),
+            satchel: super::item_bag::ItemBag::new(),
             color: Color::RED,
         }
     }
