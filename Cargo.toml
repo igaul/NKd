@@ -1,0 +1,8 @@
+[package]
+name = "rust-proj"
+version = "0.1.0"
+authors = ["gaul <gaul@pdx.edu>"]
+edition = "2018"
+
+[dependencies]
+quicksilver = { version = "0.3.10"} # xxx remove unused, default-features = false, features = [xxx...]}
