@@ -14,6 +14,7 @@ pub struct Game {
     tileset: Asset<std::collections::HashMap<char, Image>>,
     pub player: player::Player,//vec players
     tile_size_px: Vector,
+    //inventory: Asset<Image>,
     //...
 }
 
@@ -51,6 +52,8 @@ impl State for Game { //qs state trait handles window rendering
             }
             Ok(tileset)
         }));
+
+        //inventory ??? or elsewhere
 
     Ok(Self {
         title,
@@ -141,8 +144,21 @@ impl State for Game { //qs state trait handles window rendering
         })?;
 
         // Draw player
-        
+        let (tileset, p1) = (&mut self.tileset, &self.player);
+        tileset.execute(|tileset| {
+                if let Some(image) = tileset.get(&p1.ch) {
+                    let pos_px = offset_px + p1.pos.times(tile_size_px);
+                    window.draw(
+                        &Rectangle::new(pos_px, image.area().size()),
+                        Blended(&image, p1.color),
+                    );
+            }
+            Ok(())
+        })?;
 
+
+//
     Ok(())
     }
 }
+//end impl state for game
