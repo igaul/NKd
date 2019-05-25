@@ -3,17 +3,19 @@
 //move to main?
 use quicksilver::prelude::*; //reduce?
 #[path = "game_map.rs"] mod game_map; // make mod.rs ???
+#[path = "player.rs"] mod player; // make mod.rs ???
 
 pub struct Game {
     title: Asset<Image>,
     map: game_map::Map,
     pic: Asset<Image>,
-    //player inventory
+    pub player: player::Player,//vec players
     //...
 }
 
 impl State for Game { //qs state trait handles window rendering  
     fn new() -> Result<Self> {
+        //switch fmt
         // gnu mono
         let font_mono = "FreeMono.ttf"; // xxx new font / ss
         //title
@@ -24,21 +26,88 @@ impl State for Game { //qs state trait handles window rendering
         let pic = Asset::new(Image::load("testimg1.png"));
         //map
         let map = game_map::Map::new(20,20);
-Ok(Self {
-            title,
-            map,
-            pic,
+        //players
+        //break up into fei
+        // let mut players = Vec::<player::Player>::new();
+        // players.push(player::Player::new())
+        let mut player = player::Player::new();
+
+
+    Ok(Self {
+        title,
+        map,
+        pic,
+        player,
         })
     }
         /// Process keyboard and mouse, update the game state
     fn update(&mut self, window: &mut Window) -> Result<()> {
         use ButtonState::*;
 
-
-                  
-    Ok(())
+        if window.keyboard()[Key::Left] == Pressed {
+                    self.player.pos.x -= 1.0;
+                }
+                if window.keyboard()[Key::Right] == Pressed {
+                    self.player.pos.x += 1.0;
+                }
+                if window.keyboard()[Key::Up] == Pressed {
+                    self.player.pos.y -= 1.0;
+                }
+                if window.keyboard()[Key::Down] == Pressed {
+                    self.player.pos.y += 1.0;
+                }
+                if window.keyboard()[Key::A] == Pressed {
+                    self.player.money -= 1; // xxx
+                }
+                if window.keyboard()[Key::S] == Pressed {
+                    self.player.money += 1; // xxx
+                }
+                if window.keyboard()[Key::Z] == Pressed {
+                    self.player.energy -= 1; // xxx
+                }
+                if window.keyboard()[Key::X] == Pressed {
+                    self.player.energy +=  1; // xxx
+                }
+                if window.keyboard()[Key::Escape].is_down() {
+                    window.close();
+                }
+        Ok(())//ret ok void
     }
 
         //...
         //draw everything
+
+        fn draw(&mut self, window: &mut Window) -> Result<()> {
+        window.clear(Color::WHITE)?;
+
+        // Draw the game title
+        self.title.execute(|image| {
+            window.draw(
+                &image
+                    .area()
+                    .with_center((window.screen_size().x as i32 / 2, 40)),
+                Img(&image),
+            );
+            Ok(())
+        })?;
+
+        self.pic.execute(|image| {
+            window.draw(
+                &image
+                    .area()
+                    .with_center((window.screen_size().x as i32 / 4, window.screen_size().y as i32 / 4 )),
+                Img(&image),
+            );
+            Ok(())
+        })?;
+
+
+        // Draw the map
+        
+
+        // Draw player
+        
+
+    Ok(())
+    }
 }

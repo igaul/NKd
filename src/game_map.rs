@@ -1,16 +1,20 @@
 //map.rs
 //
 //
-use quicksilver::*;
+use quicksilver::{
+    geom::Vector,
+    graphics::Color,
+};
 
 //#[derive(Clone, Debug, PartialEq)]
 pub struct Tile {
-    pos: quicksilver::geom::Vector,
+    pos: Vector,
     id: i32, //if useful for type
     ch: char, //for display during development
     chance_val: i32, //
     fare: i32, // cost to cross tile
     seen: bool, // tile seen by player
+    color: Color, //replace with sprite
     //reqs: Bag, // required items to enter/traverse tile
     //...
 
@@ -41,12 +45,13 @@ impl Map {
         for i in 0..x {
             for j in 0..y {
                 let mut t = Tile {
-                    pos: geom::Vector::new(i as f32, j as f32),
+                    pos: Vector::new(i as f32, j as f32),
                     id: i + (j * x),
                     ch: 'x',
                     chance_val: 1,
                     fare: 2,
                     seen: false,
+                    color: Color::BLUE,
 
                 };
                 if i == 0 || i == x - 1 || j == 0 || j == y - 1 {

@@ -7,13 +7,12 @@
 /// 
 
 extern crate quicksilver;
-use quicksilver::prelude::*; //reduce?
 
 pub mod game_map;
 pub mod game;
 pub mod item_bag;
 /////mod tile;
-//mod player
+mod player;
 
 
 
