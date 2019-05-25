@@ -29,13 +29,13 @@ impl Player {
             color: Color::RED,
         }
     }
-    pub fn has_tool(self, tool: &String) -> bool {
+    pub fn has_tool(&self, tool: &String) -> bool {
         self.satchel.contains(tool)
     }
-    pub fn add_tool(mut self, tool: &String) {
+    pub fn add_tool(&mut self, tool: &String) {
         self.satchel.add(tool)
     }
-    pub fn remove_tool(self, tool: &String) {
+    pub fn remove_tool(&self, tool: &String) {
         //self.satchel.contains(tool)
     }
 }

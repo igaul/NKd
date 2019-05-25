@@ -9,6 +9,7 @@ pub struct Game {
     title: Asset<Image>,
     map: game_map::Map,
     pic: Asset<Image>,
+    //tileset: Asset<std::collections::HashMap<char, Image>>,
     pub player: player::Player,//vec players
     //...
 }
@@ -31,6 +32,7 @@ impl State for Game { //qs state trait handles window rendering
         // let mut players = Vec::<player::Player>::new();
         // players.push(player::Player::new())
         let mut player = player::Player::new();
+        player.add_tool(&"Blue Towel".to_string()); // ???
 
 
     Ok(Self {

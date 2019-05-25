@@ -35,7 +35,7 @@ impl Item_Bag {
         self.bag.clear()
     }
     //insert
-    pub fn add(mut self, item: &String) {
+    pub fn add(&mut self, item: &String) {
         if self.bag.contains_key(item) {
             self.bag.insert(item.to_string(), self.count(item) + 1);
         }
