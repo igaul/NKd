@@ -1,19 +1,19 @@
 //game.rs
 //game manager
-//move to main?
+
 use quicksilver::prelude::*; //reduce?
-mod game_map; // make mod.rs ???
-mod player; // make mod.rs ???
-mod item_bag;
-// mod map;
-// mod tile;
+pub mod game_map;
+pub mod player; 
+pub mod item_bag;
+
 
 pub struct Game {
     title: Asset<Image>,
     map: game_map::Map,
     pic: Asset<Image>,
-    //tileset: Asset<std::collections::HashMap<char, Image>>,
+    tileset: Asset<std::collections::HashMap<char, Image>>,
     pub player: player::Player,//vec players
+    tile_size_px: Vector,
     //...
 }
 
@@ -29,20 +29,36 @@ impl State for Game { //qs state trait handles window rendering
         //pic for experimenting 
         let pic = Asset::new(Image::load("testimg1.png"));
         //map
-        let map = game_map::Map::new(20,20);
-        //players
+        let map = game_map::Map::gen(20,20); // xxx get window size from main?
+        //characters
         //break up into fei
         // let mut players = Vec::<player::Player>::new();
         // players.push(player::Player::new())
         let mut player = player::Player::new();
         player.add_tool(&"Blue Towel".to_string()); // ???
 
+        let chs = "xO";
+        let tile_size_px = Vector::new(24, 24);
+        let tileset = Asset::new(Font::load(font_mono).and_then(move |text| {
+            let tiles = text
+                .render(chs, &FontStyle::new(tile_size_px.y, Color::WHITE))
+                .expect("Could not render the font tileset.");
+            let mut tileset = std::collections::HashMap::new();
+            for (index, glyph) in chs.chars().enumerate() {
+                let pos = (index as i32 * tile_size_px.x as i32, 0);
+                let tile = tiles.subimage(Rectangle::new(pos, tile_size_px));
+                tileset.insert(glyph, tile);
+            }
+            Ok(tileset)
+        }));
 
     Ok(Self {
         title,
         map,
         pic,
         player,
+        tileset,
+        tile_size_px,
         })
     }
         /// Process keyboard and mouse, update the game state
@@ -100,7 +116,7 @@ impl State for Game { //qs state trait handles window rendering
             window.draw(
                 &image
                     .area()
-                    .with_center((window.screen_size().x as i32 / 4, window.screen_size().y as i32 / 4 )),
+                    .with_center((window.screen_size().x as i32 - 60, window.screen_size().y as i32 / 2 )),
                 Img(&image),
             );
             Ok(())
@@ -108,7 +124,21 @@ impl State for Game { //qs state trait handles window rendering
 
 
         // Draw the map
-        
+        let tile_size_px = self.tile_size_px;
+        let offset_px = Vector::new(50, 120);
+        let (tileset, map) = (&mut self.tileset, &self.map);
+        tileset.execute(|tileset| {
+            for tile in map.map.iter() {
+                if let Some(image) = tileset.get(&tile.ch) {
+                    let pos_px = tile.pos.times(tile_size_px);
+                    window.draw(
+                        &Rectangle::new(offset_px + pos_px, image.area().size()),
+                        Blended(&image, tile.color),
+                    );
+                }
+            }
+            Ok(())
+        })?;
 
         // Draw player
         

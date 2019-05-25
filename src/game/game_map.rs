@@ -5,16 +5,16 @@ use quicksilver::{
     geom::Vector,
     graphics::Color,
 };
-
-//#[derive(Clone, Debug, PartialEq)]
+//derive for comp, vecs...
+#[derive(Clone, Debug, PartialEq)]
 pub struct Tile {
-    pos: Vector,
+    pub pos: Vector,
     id: i32, //if useful for type
-    ch: char, //for display during development
+    pub ch: char, //for display during development
     chance_val: i32, //
     fare: i32, // cost to cross tile
     seen: bool, // tile seen by player
-    color: Color, //replace with sprite
+    pub color: Color, //replace with sprite
     //reqs: Bag, // required items to enter/traverse tile
     //...
 
@@ -25,7 +25,7 @@ pub struct Tile {
 // }
 
 pub struct Map {
-    pub map: Vec<Tile>,
+    pub map: Vec<Tile>, //???
     size: i32,
     x_size: i32,
     y_size: i32,
@@ -63,4 +63,11 @@ impl Map {
         m
     }
 }
+
+// impl Iterator for Map {
+//     type item = Tile;
+//     fn next(&mut self)-> Option<Tile> {
+
+//     }
+// }
 
