@@ -2,8 +2,11 @@
 //game manager
 //move to main?
 use quicksilver::prelude::*; //reduce?
-#[path = "game_map.rs"] mod game_map; // make mod.rs ???
-#[path = "player.rs"] mod player; // make mod.rs ???
+mod game_map; // make mod.rs ???
+mod player; // make mod.rs ???
+mod item_bag;
+// mod map;
+// mod tile;
 
 pub struct Game {
     title: Asset<Image>,

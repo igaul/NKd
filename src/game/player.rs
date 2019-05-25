@@ -6,14 +6,14 @@ use quicksilver::{
     graphics::Color,
 };
 
-#[path = "item_bag.rs"] mod item_bag; // make mod.rs !!! ???
+//#[path = "item_bag.rs"] mod item_bag; // make mod.rs !!! ???
 pub struct Player {
     pub pos: Vector,
     pub ch: char, // xxx
     pub money: i32,
     pub energy: i32,
     pub name: String,
-    pub satchel: item_bag::Item_Bag,
+    pub satchel: super::item_bag::Item_Bag,
     pub color: Color,
 }
 
@@ -25,7 +25,7 @@ impl Player {
             money: 111,
             energy: 222,
             name: "mike".to_string(),// make add
-            satchel: item_bag::Item_Bag::new(),
+            satchel: super::item_bag::Item_Bag::new(),
             color: Color::RED,
         }
     }
