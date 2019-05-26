@@ -119,7 +119,7 @@ impl State for Game { //qs state trait handles window rendering
             window.draw(
                 &image
                     .area()
-                    .with_center((window.screen_size().x as i32 - 60, window.screen_size().y as i32 / 2 )),
+                    .with_center((window.screen_size().x as i32 - 200, window.screen_size().y as i32 / 2 )),
                 Img(&image),
             );
             Ok(())
@@ -132,7 +132,7 @@ impl State for Game { //qs state trait handles window rendering
         let (tileset, map, p_pos, p_ch) = (&mut self.tileset, &self.map, &self.player.pos, &self.player.ch);
         tileset.execute(|tileset| {
             for tile in map.map.iter() {
-                if tile.pos != *p_pos {
+                // if tile.pos != *p_pos {
                 if let Some(image) = tileset.get(&tile.ch) {
                     let pos_px = tile.pos.times(tile_size_px);
                     window.draw(
@@ -140,16 +140,30 @@ impl State for Game { //qs state trait handles window rendering
                         Blended(&image, tile.color),
                     );
                 }
-               else { // xxx how to ???
-                   if let Some(image) = tileset.get(&'X') {
-                    let pos_px = p_pos.times(tile_size_px);
-                    window.draw(
-                        &Rectangle::new(offset_px + pos_px, image.area().size()),
-                        Blended(&image, Color::RED),
-                    );
-                }
-               } 
+            //    else { // xxx how to ???
+            //        if let Some(image) = tileset.get(p_ch) {
+            //         let pos_px = p_pos.times(tile_size_px);
+            //         window.draw(
+            //             &Rectangle::new(offset_px + pos_px, image.area().size()),
+            //             Blended(&image, Color::RED),
+            //         );
+            //     }
+            //    } 
+            //}
             }
+            Ok(())
+        })?;
+
+        //Draw Player
+        let (tileset, p1) = (&mut self.tileset, &self.player);
+        tileset.execute(|tileset| {
+            if let Some(image) = tileset.get(&p1.ch) {
+                let pos_px = offset_px + p1.pos.times(tile_size_px);
+                window.draw(
+                    &Rectangle::new(pos_px, image.area()
+                    .size()),
+                Blended(&image, p1.color),
+                );
             }
             Ok(())
         })?;
