@@ -4,8 +4,7 @@
 //
 //
 ////
-/// 
-
+///
 extern crate quicksilver;
 
 //pub mod game_map;
@@ -14,11 +13,8 @@ pub mod game;
 // /////mod tile;
 // mod player;
 
-
-
-
 fn main() {
-// call copied from qs:
+    // call copied from qs:
     // NOTE: Set HIDPI to 1.0 to get pixel-perfect rendering.
     // Otherwise the window resizes to whatever value the OS sets and
     // scales the contents.
@@ -32,6 +28,9 @@ fn main() {
         ..Default::default()
     };
 
-    quicksilver::lifecycle::run::<game::Game>("NKd", quicksilver::geom::Vector::new(800, 600), settings);
-
+    quicksilver::lifecycle::run::<game::Game>(
+        "NKd",
+        quicksilver::geom::Vector::new(800, 600),
+        settings,
+    );
 }

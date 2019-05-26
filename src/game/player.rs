@@ -1,10 +1,7 @@
 //player.rs
 //
 //
-use quicksilver::{
-    geom::Vector,
-    graphics::Color,
-};
+use quicksilver::{geom::Vector, graphics::Color};
 
 pub struct Player {
     pub pos: Vector,
@@ -19,11 +16,11 @@ pub struct Player {
 impl Player {
     pub fn new() -> Player {
         Player {
-            pos: Vector::new(10,10), //rand or choose xxx
-            ch: 'x', // xxx
+            pos: Vector::new(10, 10), //rand or choose xxx
+            ch: 'x',                  // xxx
             money: 50,
             energy: 80,
-            name: "mike".to_string(),// make add
+            name: "mike".to_string(), // make add
             satchel: super::item_bag::ItemBag::new(),
             color: Color::RED,
         }

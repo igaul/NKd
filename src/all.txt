@@ -1,0 +1,404 @@
+//map.rs
+//
+//move into mod ???
+use quicksilver::{
+    geom::Vector,
+    graphics::Color,
+};
+//derive for comp, vecs...
+#[derive(Clone, Debug, PartialEq)]
+pub struct Tile {
+    pub pos: Vector,
+    id: i32, //if useful for type
+    pub ch: char, //for display during development
+    chance_val: i32, //
+    fare: i32, // cost to cross tile
+    seen: bool, // tile seen by player
+    pub color: Color, //replace with sprite
+    //reqs: Bag, // required items to enter/traverse tile
+    //...
+
+}
+
+// impl Tile {
+
+// }
+
+pub struct Map {
+    pub map: Vec<Tile>, //???
+    pub size: Vector,
+    // x_size: i32,
+    // y_size: i32,
+}
+
+impl Map {
+    pub fn new(x: f32, y: f32) -> Map {
+            Map{
+                // y_size : y,
+                // x_size : x,
+                // size : y * x,
+                size : Vector::new(x,y),
+                map : Vec::with_capacity((x * y) as usize),
+            }
+    }
+    pub fn gen(x: f32, y: f32) -> Map {
+        let mut m = Map::new(x,y);
+        for i in 0..x as i32 {
+            for j in 0..y as i32{
+                let mut t = Tile {
+                    pos: Vector::new(i as f32, j as f32),
+                    id: i + (j * x as i32),
+                    ch: 'x',
+                    chance_val: 1,
+                    fare: 2,
+                    seen: false,
+                    color: Color::BLUE,
+
+                };
+                if i == 0 || i == x as i32 - 1 || j == 0 || j == y as i32 - 1 {
+                t.ch = 'O';
+            };
+            m.map.push(t);
+            }
+        }
+        m
+    }
+}
+
+// impl Iterator for Map {
+//     type item = Tile;
+//     fn next(&mut self)-> Option<Tile> {
+
+//     }
+// }
+
+//ItemBag
+//hashmap to hold items as String:count
+
+pub type Bag = std::collections::HashMap<String, i32>; //or str??
+
+pub struct ItemBag {
+    bag: Bag,
+}
+impl ItemBag {
+    pub fn new() -> ItemBag {
+        ItemBag {
+            bag: Bag::with_capacity(0)
+        }
+    }
+    //init with vec of strings
+    // pub fn new(items: &Vec<String>) -> ItemBag {
+    //     bag: Bag::with_capacity(items.len());
+    //     for s in items {
+    //         bag.add(s);
+    //     }
+    //     bag
+    // }
+    pub fn contains(&self, item: &String) -> bool { //or &String or &str ???
+        self.bag.contains_key(item)
+    }
+    //return count
+    pub fn count(&self, item: &String) -> i32 {
+        match self.bag.get(item) {
+            Some(i) => *i,
+            None => 0,
+        }
+    }
+    //empty bag
+    pub fn empty(mut self) {
+        self.bag.clear()
+    }
+    //insert
+    pub fn add(&mut self, item: &String) {
+        if self.bag.contains_key(item) {
+            self.bag.insert(item.to_string(), self.count(item) + 1);
+        }
+        else {
+            self.bag.insert(item.to_string(), 1); //way around ???
+        }
+    }
+    //compare this to that, return first item this does not have or empty string //change to result ???
+    pub fn compare(&self, other: Bag) -> String {
+        for k in self.bag.keys() {
+            if other.contains_key(k) {
+                return k.to_string()
+            }
+        }
+        "".to_string()
+    }
+}//game.rs
+//game manager
+
+use quicksilver::prelude::*; //reduce?
+pub mod game_map;
+pub mod player; 
+pub mod item_bag;
+
+
+pub struct Game {
+    title: Asset<Image>,
+    pub map: game_map::Map,
+    pic: Asset<Image>,
+    tileset: Asset<std::collections::HashMap<char, Image>>,
+    pub player: player::Player,//vec players
+    tile_size_px: Vector,
+    //inventory: Asset<Image>,
+    //...
+}
+
+impl State for Game { //qs state trait handles window rendering  
+    fn new() -> Result<Self> {
+        //switch fmt
+        // gnu mono
+        let font_mono = "FreeMono.ttf"; // xxx new font / ss
+        //title
+        let title = Asset::new(Font::load(font_mono).and_then(|font| {
+                font.render("NKd", &FontStyle::new(72.0, Color::BLACK))
+            }));
+        //pic for experimenting 
+        let pic = Asset::new(Image::load("testimg1.png"));
+        //map
+        let map = game_map::Map::gen(20.0,20.0); // xxx get window size from main?
+        //characters
+        //break up into fei
+        // let mut players = Vec::<player::Player>::new();
+        // players.push(player::Player::new())
+        let mut player = player::Player::new();
+        player.add_tool(&"Blue Towel".to_string()); // ???
+
+        let chs = "xOXo";
+        let tile_size_px = Vector::new(10, 24);
+        let tileset = Asset::new(Font::load(font_mono).and_then(move |text| {
+            let tiles = text
+                .render(chs, &FontStyle::new(tile_size_px.y, Color::WHITE))
+                .expect("Could not render the font tileset.");
+            let mut tileset = std::collections::HashMap::new();
+            for (index, glyph) in chs.chars().enumerate() {
+                let pos = (index as i32 * tile_size_px.x as i32, 0);
+                let tile = tiles.subimage(Rectangle::new(pos, tile_size_px));
+                tileset.insert(glyph, tile);
+            }
+            Ok(tileset)
+        }));
+
+        //inventory ??? or elsewhere
+
+    Ok(Self {
+        title,
+        map,
+        pic,
+        player,
+        tileset,
+        tile_size_px,
+        })
+    }
+        /// Process keyboard and mouse, update the game state
+    fn update(&mut self, window: &mut Window) -> Result<()> {
+        use ButtonState::*;
+
+        if window.keyboard()[Key::Left] == Pressed {
+                    self.player.pos.x -= 1.0;
+                }
+                if window.keyboard()[Key::Right] == Pressed {
+                    self.player.pos.x += 1.0;
+                }
+                if window.keyboard()[Key::Up] == Pressed {
+                    self.player.pos.y -= 1.0;
+                }
+                if window.keyboard()[Key::Down] == Pressed {
+                    self.player.pos.y += 1.0;
+                }
+                if window.keyboard()[Key::A] == Pressed {
+                    self.player.money -= 10; // xxx
+                }
+                if window.keyboard()[Key::S] == Pressed {
+                    self.player.money += 10; // xxx
+                }
+                if window.keyboard()[Key::Z] == Pressed {
+                    self.player.energy -= 10; // xxx
+                }
+                if window.keyboard()[Key::X] == Pressed {
+                    self.player.energy +=  10; // xxx
+                }
+                if window.keyboard()[Key::Escape].is_down() {
+                    window.close();
+                }
+        Ok(())//ret ok void
+    }
+
+        //...
+        //draw everything
+
+        fn draw(&mut self, window: &mut Window) -> Result<()> {
+        window.clear(Color::WHITE)?;
+
+        // Draw the game title
+        self.title.execute(|image| {
+            window.draw(
+                &image
+                    .area()
+                    .with_center((window.screen_size().x as i32 / 2, 40)),
+                Img(&image),
+            );
+            Ok(())
+        })?;
+
+        self.pic.execute(|image| {
+            window.draw(
+                &image
+                    .area()
+                    .with_center((window.screen_size().x as i32 - 200, window.screen_size().y as i32 / 2 )),
+                Img(&image),
+            );
+            Ok(())
+        })?;
+
+
+        // Draw the map
+        let tile_size_px = Vector::new(24, 24);
+        let offset_px = Vector::new(50, 120);
+        let (tileset, map, p_pos, p_ch) = (&mut self.tileset, &self.map, &self.player.pos, &self.player.ch);
+        tileset.execute(|tileset| {
+            for tile in map.map.iter() {
+                // if tile.pos != *p_pos {
+                if let Some(image) = tileset.get(&tile.ch) {
+                    let pos_px = tile.pos.times(tile_size_px);
+                    window.draw(
+                        &Rectangle::new(offset_px + pos_px, image.area().size()),
+                        Blended(&image, tile.color),
+                    );
+                }
+            //    else { // xxx how to ???
+            //        if let Some(image) = tileset.get(p_ch) {
+            //         let pos_px = p_pos.times(tile_size_px);
+            //         window.draw(
+            //             &Rectangle::new(offset_px + pos_px, image.area().size()),
+            //             Blended(&image, Color::RED),
+            //         );
+            //     }
+            //    } 
+            //}
+            }
+            Ok(())
+        })?;
+
+        //Draw Player
+        let (tileset, p1) = (&mut self.tileset, &self.player);
+        tileset.execute(|tileset| {
+            if let Some(image) = tileset.get(&p1.ch) {
+                let pos_px = offset_px + p1.pos.times(tile_size_px);
+                window.draw(
+                    &Rectangle::new(pos_px, image.area()
+                    .size()),
+                Blended(&image, p1.color),
+                );
+            }
+            Ok(())
+        })?;
+
+        let p1 = &self.player;
+        let max_bar = 100.0;
+        let curr_power = p1.energy as f32;
+        let curr_money = p1.money as f32; // xxx make min/max
+        let map_size_px = self.map.size.times(tile_size_px);
+        let power_bar_pos_px = offset_px + Vector::new(map_size_px.x, 0.0);
+        let money_bar_pos_px = offset_px + Vector::new(map_size_px.x, tile_size_px.y + 5.0);
+        //draw max vals shaded
+        window.draw(
+            &Rectangle::new(power_bar_pos_px, (max_bar, tile_size_px.y)),
+            Col(Color::BLUE.with_alpha(0.5)),
+            );
+        window.draw(
+            &Rectangle::new(money_bar_pos_px, (max_bar, tile_size_px.y)),
+            Col(Color::GREEN.with_alpha(0.5)),
+        );
+        //draw curr values on top
+        window.draw(
+            &Rectangle::new(power_bar_pos_px, (curr_power, tile_size_px.y)),
+            Col(Color::BLUE),
+        );
+        window.draw(
+            &Rectangle::new(money_bar_pos_px, (curr_money, tile_size_px.y)),
+            Col(Color::GREEN),
+        );
+
+//
+    Ok(())
+    }
+}
+//end impl state for game//player.rs
+//
+//
+use quicksilver::{
+    geom::Vector,
+    graphics::Color,
+};
+
+pub struct Player {
+    pub pos: Vector,
+    pub ch: char, // xxx
+    pub money: i32,
+    pub energy: i32,
+    pub name: String,
+    pub satchel: super::item_bag::ItemBag,
+    pub color: Color,
+}
+
+impl Player {
+    pub fn new() -> Player {
+        Player {
+            pos: Vector::new(10,10), //rand or choose xxx
+            ch: 'x', // xxx
+            money: 50,
+            energy: 80,
+            name: "mike".to_string(),// make add
+            satchel: super::item_bag::ItemBag::new(),
+            color: Color::RED,
+        }
+    }
+    pub fn has_tool(&self, tool: &String) -> bool {
+        self.satchel.contains(tool)
+    }
+    pub fn add_tool(&mut self, tool: &String) {
+        self.satchel.add(tool)
+    }
+    pub fn remove_tool(&self, tool: &String) {
+        //self.satchel.contains(tool)
+    }
+}//main
+//
+//
+//
+//
+////
+/// 
+
+extern crate quicksilver;
+
+//pub mod game_map;
+pub mod game;
+// pub mod item_bag;
+// /////mod tile;
+// mod player;
+
+
+
+
+fn main() {
+// call copied from qs:
+    // NOTE: Set HIDPI to 1.0 to get pixel-perfect rendering.
+    // Otherwise the window resizes to whatever value the OS sets and
+    // scales the contents.
+    // https://docs.rs/glutin/0.19.0/glutin/dpi/index.html
+    std::env::set_var("WINIT_HIDPI_FACTOR", "1.0");
+
+    let settings = quicksilver::lifecycle::Settings {
+        // If the graphics do need to be scaled (e.g. using
+        // `with_center`), blur them. This looks better with fonts.
+        scale: quicksilver::graphics::ImageScaleStrategy::Blur,
+        ..Default::default()
+    };
+
+    quicksilver::lifecycle::run::<game::Game>("NKd", quicksilver::geom::Vector::new(800, 600), settings);
+
+}

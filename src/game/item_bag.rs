@@ -9,7 +9,7 @@ pub struct ItemBag {
 impl ItemBag {
     pub fn new() -> ItemBag {
         ItemBag {
-            bag: Bag::with_capacity(0)
+            bag: Bag::with_capacity(0),
         }
     }
     //init with vec of strings
@@ -20,7 +20,8 @@ impl ItemBag {
     //     }
     //     bag
     // }
-    pub fn contains(&self, item: &String) -> bool { //or &String or &str ???
+    pub fn contains(&self, item: &String) -> bool {
+        //or &String or &str ???
         self.bag.contains_key(item)
     }
     //return count
@@ -38,8 +39,7 @@ impl ItemBag {
     pub fn add(&mut self, item: &String) {
         if self.bag.contains_key(item) {
             self.bag.insert(item.to_string(), self.count(item) + 1);
-        }
-        else {
+        } else {
             self.bag.insert(item.to_string(), 1); //way around ???
         }
     }
@@ -47,7 +47,7 @@ impl ItemBag {
     pub fn compare(&self, other: Bag) -> String {
         for k in self.bag.keys() {
             if other.contains_key(k) {
-                return k.to_string()
+                return k.to_string();
             }
         }
         "".to_string()
