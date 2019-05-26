@@ -81,16 +81,16 @@ impl State for Game { //qs state trait handles window rendering
                     self.player.pos.y += 1.0;
                 }
                 if window.keyboard()[Key::A] == Pressed {
-                    self.player.money -= 1; // xxx
+                    self.player.money -= 10; // xxx
                 }
                 if window.keyboard()[Key::S] == Pressed {
-                    self.player.money += 1; // xxx
+                    self.player.money += 10; // xxx
                 }
                 if window.keyboard()[Key::Z] == Pressed {
-                    self.player.energy -= 1; // xxx
+                    self.player.energy -= 10; // xxx
                 }
                 if window.keyboard()[Key::X] == Pressed {
-                    self.player.energy +=  1; // xxx
+                    self.player.energy +=  10; // xxx
                 }
                 if window.keyboard()[Key::Escape].is_down() {
                     window.close();
