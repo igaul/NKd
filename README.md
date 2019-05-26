@@ -14,7 +14,6 @@ Quicksilver [crate](https://crates.io/crates/quicksilver), and it's many dependa
 Tomas Sedovic's [quicksilver tutorial](https://github.com/tomassedovic/quicksilver-roguelike)
 a friendly introduction to using quicksilver and rendering games. 
 
-github.com/igaul/cs300
 
 #
 ### Use:

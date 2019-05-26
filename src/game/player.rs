@@ -6,7 +6,6 @@ use quicksilver::{
     graphics::Color,
 };
 
-//#[path = "item_bag.rs"] mod item_bag; // make mod.rs !!! ???
 pub struct Player {
     pub pos: Vector,
     pub ch: char, // xxx
@@ -21,7 +20,7 @@ impl Player {
     pub fn new() -> Player {
         Player {
             pos: Vector::new(10,10), //rand or choose xxx
-            ch: 'X', // xxx
+            ch: 'x', // xxx
             money: 50,
             energy: 80,
             name: "mike".to_string(),// make add
