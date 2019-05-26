@@ -19,8 +19,8 @@ a friendly introduction to using quicksilver and rendering games.
 ### Use:
 
 
-#### [click for demo](https://igaul.github.io/rust-proj)
-    Note: lots of extensions break js rendering canvas, private modes of firefox on windows and chrome on linux appear to consistently work. 
+#### [click for demo](https://igaul.github.io/NKd)
+    Note: some extensions break js rendering canvas, private modes of firefox on windows and chrome on linux appear to consistently work. 
 
 
 #### Linux:
