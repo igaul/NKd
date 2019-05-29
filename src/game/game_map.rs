@@ -12,7 +12,7 @@ pub struct Tile {
     fare: i32,       // cost to cross tile
     seen: bool,      // tile seen by player
     pub color: Color, //replace with sprite
-                     //reqs: Bag, // required items to enter/traverse tile
+    pub reqs: Vec<String>, // required items to enter/traverse tile
                      //...
 }
 
@@ -49,6 +49,7 @@ impl Map {
                     fare: 2,
                     seen: false,
                     color: Color::BLUE,
+                    reqs: ["Blue towel".to_string()].to_vec(),
                 };
                 if i == 0 || i == x as i32 - 1 || j == 0 || j == y as i32 - 1 {
                     t.ch = 'O';

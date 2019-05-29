@@ -13,6 +13,7 @@ pub struct Game {
     tileset: Asset<std::collections::HashMap<char, Image>>,
     pub player: player::Player, //vec players
     tile_size_px: Vector,
+    controls: Asset<Image>,
     //inventory: Asset<Image>,
     //...
 }
@@ -28,16 +29,23 @@ impl State for Game {
             Font::load(font_mono)
                 .and_then(|font| font.render("NKd", &FontStyle::new(72.0, Color::BLACK))),
         );
+        //controls
+        let controls = Asset::new(Font::load(font_mono).and_then(move |font| {
+            font.render(
+                "Conrols:\nUp: North\nDown: South\nLeft: East\nRight: West\nA/S: h\nZ/X: p \nEsc: quit",
+                &FontStyle::new(20.0, Color::BLACK),
+            )
+        }));
         //pic for experimenting
         let pic = Asset::new(Image::load("testimg1.png"));
         //map
-        let map = game_map::Map::gen(20.0, 20.0); // xxx get window size from main?
+        let map = game_map::Map::gen(20.0, 20.0); // xxx use window size?
                                                   //characters
                                                   //break up into fei
                                                   // let mut players = Vec::<player::Player>::new();
                                                   // players.push(player::Player::new())
         let mut player = player::Player::new();
-        player.add_tool(&"Blue Towel".to_string()); // ???
+        player.add_tool(&"Blue Towel".to_string()); // T ???
 
         let chs = "xOXo";
         let tile_size_px = Vector::new(10, 24);
@@ -63,16 +71,17 @@ impl State for Game {
             player,
             tileset,
             tile_size_px,
+            controls,
         })
     }
     /// Process keyboard and mouse, update the game state
     fn update(&mut self, window: &mut Window) -> Result<()> {
         use ButtonState::*;
 
-        if window.keyboard()[Key::Left] == Pressed {
+        if window.keyboard()[Key::Left] == Pressed || window.keyboard()[Key::Left] == Held {
             self.player.pos.x -= 1.0;
         }
-        if window.keyboard()[Key::Right] == Pressed {
+        if window.keyboard()[Key::Right] == Pressed || window.keyboard()[Key::Right] == Held {
             self.player.pos.x += 1.0;
         }
         if window.keyboard()[Key::Up] == Pressed {
@@ -81,10 +90,10 @@ impl State for Game {
         if window.keyboard()[Key::Down] == Pressed {
             self.player.pos.y += 1.0;
         }
-        if window.keyboard()[Key::A] == Pressed {
+        if window.keyboard()[Key::A] == Pressed || window.keyboard()[Key::A] == Held {
             self.player.money -= 10; // xxx
         }
-        if window.keyboard()[Key::S] == Pressed {
+        if window.keyboard()[Key::S] == Pressed || window.keyboard()[Key::S] == Held {
             self.player.money += 10; // xxx
         }
         if window.keyboard()[Key::Z] == Pressed {
@@ -105,7 +114,7 @@ impl State for Game {
     fn draw(&mut self, window: &mut Window) -> Result<()> {
         window.clear(Color::WHITE)?;
 
-        // Draw the game title
+        // Draw title
         self.title.execute(|image| {
             window.draw(
                 &image
@@ -119,7 +128,7 @@ impl State for Game {
         self.pic.execute(|image| {
             window.draw(
                 &image.area().with_center((
-                    window.screen_size().x as i32 - 200,
+                    window.screen_size().x as i32 - 100,
                     window.screen_size().y as i32 / 2,
                 )),
                 Img(&image),
@@ -127,8 +136,9 @@ impl State for Game {
             Ok(())
         })?;
 
-        // Draw the map
+        // Draw map
         let tile_size_px = Vector::new(24, 24);
+        let map_size_px = self.map.size.times(tile_size_px);
         let offset_px = Vector::new(50, 120);
         let (tileset, map, p_pos, p_ch) = (
             &mut self.tileset,
@@ -138,7 +148,6 @@ impl State for Game {
         );
         tileset.execute(|tileset| {
             for tile in map.map.iter() {
-                // if tile.pos != *p_pos {
                 if let Some(image) = tileset.get(&tile.ch) {
                     let pos_px = tile.pos.times(tile_size_px);
                     window.draw(
@@ -146,16 +155,6 @@ impl State for Game {
                         Blended(&image, tile.color),
                     );
                 }
-                //    else { // xxx how to ???
-                //        if let Some(image) = tileset.get(p_ch) {
-                //         let pos_px = p_pos.times(tile_size_px);
-                //         window.draw(
-                //             &Rectangle::new(offset_px + pos_px, image.area().size()),
-                //             Blended(&image, Color::RED),
-                //         );
-                //     }
-                //    }
-                //}
             }
             Ok(())
         })?;
@@ -173,13 +172,24 @@ impl State for Game {
             Ok(())
         })?;
 
+        //draw button controls
+        self.controls.execute(|image| {
+            window.draw(
+                &image
+                    .area()
+                    .with_center((window.screen_size().x as i32 - 100, window.screen_size().y as i32 - 100)),
+                Img(&image),
+            );
+            Ok(())
+        })?;
+
         let p1 = &self.player;
         let max_bar = 100.0;
-        let curr_power = p1.energy as f32;
-        let curr_money = p1.money as f32; // xxx make min/max
-        let map_size_px = self.map.size.times(tile_size_px);
+        let curr_power = p1.energy as f32 % max_bar;//add checks
+        let curr_money = p1.money as f32 % max_bar; // xxx make min/max
         let power_bar_pos_px = offset_px + Vector::new(map_size_px.x, 0.0);
-        let money_bar_pos_px = offset_px + Vector::new(map_size_px.x, tile_size_px.y + 5.0);
+        let money_bar_pos_px = offset_px + Vector::new(map_size_px.x, tile_size_px.y);
+        let inventory_pos_px = offset_px + Vector::new(map_size_px.x, tile_size_px.y * 2.0);
         //draw max vals shaded
         window.draw(
             &Rectangle::new(power_bar_pos_px, (max_bar, tile_size_px.y)),
@@ -198,9 +208,30 @@ impl State for Game {
             &Rectangle::new(money_bar_pos_px, (curr_money, tile_size_px.y)),
             Col(Color::GREEN),
         );
+        //draw inventory
+        let font_mono = "FreeMono.ttf"; // xxx new font
+        let player_bag = "aaa";//self.player.contents_to_string();
+        let mut inventory = Asset::new(Font::load(font_mono).and_then(move |font| {
+            font.render(
+                &player_bag,
+                &FontStyle::new(20.0, Color::BLACK),
+            )
+        }));
+        inventory.execute(|image| {
+            window.draw(
+                &image.area()
+                .translate(inventory_pos_px),
+                Img(&image),
+            );
+            Ok(())
+        })?;
+
 
         //
         Ok(())
     }
 }
 //end impl state for game
+
+
+//tests or in test file
