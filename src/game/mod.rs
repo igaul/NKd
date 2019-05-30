@@ -12,7 +12,7 @@ pub struct Game {
     pic: Asset<Image>,
     tileset: Asset<std::collections::HashMap<char, Image>>,
     pub player: player::Player, //vec players
-    tile_size_px: Vector,
+    //tile_size_px: Vector,
     controls: Asset<Image>,
     //inventory: Asset<Image>,
     //...
@@ -45,11 +45,11 @@ impl State for Game {
                                                   //break up into fei
                                                   // let mut players = Vec::<player::Player>::new();
                                                   // players.push(player::Player::new())
-        let mut player = player::Player::new();
+        let player = player::Player::new();
          // T ???
         
 
-        let chs = "xOXo";
+        let chs = "xOXoAQ";
         let tile_size_px = Vector::new(10, 24);
         let tileset = Asset::new(Font::load(font_mono).and_then(move |text| {
             let tiles = text
@@ -72,7 +72,7 @@ impl State for Game {
             pic,
             player,
             tileset,
-            tile_size_px,
+            //tile_size_px,
             controls,
         })
     }
@@ -80,34 +80,40 @@ impl State for Game {
     fn update(&mut self, window: &mut Window) -> Result<()> {
         use ButtonState::*;
 
-        if window.keyboard()[Key::Left] == Pressed || window.keyboard()[Key::Left] == Held {
-            if self.map.is_on_board(self.player.pos.x - 1.0){
+        if window.keyboard()[Key::Left] == Pressed {//|| window.keyboard()[Key::Left] == Held {
+            if self.map.is_on_board_x(self.player.pos.x - 1.0){
                 self.player.pos.x -= 1.0;
             }
         }
-        if window.keyboard()[Key::Right] == Pressed || window.keyboard()[Key::Right] == Held {
-            if self.map.is_on_board(self.player.pos.x + 1.0){
+        if window.keyboard()[Key::Right] == Pressed {//|| window.keyboard()[Key::Right] == Held {
+            if self.map.is_on_board_x(self.player.pos.x + 1.0){
                 self.player.pos.x += 1.0;
             }
         }
         if window.keyboard()[Key::Up] == Pressed {
-            if self.map.is_on_board(self.player.pos.y - 1.0){
+            if self.map.is_on_board_y(self.player.pos.y - 1.0){
                 self.player.pos.y -= 1.0;
             }
         }
         if window.keyboard()[Key::Down] == Pressed {
-            if self.map.is_on_board(self.player.pos.y + 1.0){
-                self.player.pos.y - 1.0;
+            if self.map.is_on_board_y(self.player.pos.y + 1.0){
+                self.player.pos.y += 1.0;
             }
         }
         if window.keyboard()[Key::A] == Pressed || window.keyboard()[Key::A] == Held {
             self.player.money -= 10; // xxx
+            if self.player.money < 0 {
+                self.player.money = 0;
+            }
         }
         if window.keyboard()[Key::S] == Pressed || window.keyboard()[Key::S] == Held {
             self.player.money += 10; // xxx
         }
         if window.keyboard()[Key::Z] == Pressed {
             self.player.energy -= 10; // xxx
+            if self.player.energy < 0 {
+                self.player.energy = 0;
+            }
         }
         if window.keyboard()[Key::X] == Pressed {
             self.player.energy += 10; // xxx
@@ -150,7 +156,7 @@ impl State for Game {
         let tile_size_px = Vector::new(24, 24);
         let map_size_px = self.map.size.times(tile_size_px);
         let offset_px = Vector::new(50, 120);
-        let (tileset, map, p_pos, p_ch) = (
+        let (tileset, map, _p_pos, _p_ch) = (
             &mut self.tileset,
             &self.map,
             &self.player.pos,
