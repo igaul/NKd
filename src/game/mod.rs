@@ -266,10 +266,11 @@ impl State for Game {
 impl Game {
     //dump stats xxx
     pub fn dump_stats(&self) {
-        println!("\nPpos: {} - {}\nTpos: {} - {}\npow: {}\nmoney: {}\n",  
+        println!("\nPpos: {} - {}\nTpos: {} - {} id: {}\npow: {}\nmoney: {}\n",  
         self.player.pos.x, self.player.pos.y,
         self.map.get_tile(&self.player.pos).pos.x,
         self.map.get_tile(&self.player.pos).pos.y,
+        self.map.get_tile(&self.player.pos).id,
         self.player.energy,
         self.player.money
         );//xxx debug to terminal

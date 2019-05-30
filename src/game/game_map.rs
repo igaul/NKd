@@ -6,11 +6,11 @@ use quicksilver::{geom::Vector, graphics::Color};
 #[derive(Clone, Debug, PartialEq)]
 pub struct Tile {
     pub pos: Vector,
-    id: i32,         //if useful for type
+    pub id: i32,         //if useful for type
     pub ch: char,    //for display during development
     chance_val: i32, //
     fare: i32,       // cost to cross tile
-    seen: bool,      // tile seen by player
+    pub seen: bool,      // tile seen by player
     pub color: Color, //replace with sprite
     pub reqs: Vec<String>, // required items to enter/traverse tile
                      //...
