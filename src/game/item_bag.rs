@@ -1,11 +1,12 @@
 //ItemBag
-//hashmap to hold items as String:count
+//hashmap to hold items as name<string>:count<i32>
 
 pub type Bag = std::collections::HashMap<String, i32>; //or str??
-
+#[derive(Debug, Clone)]
 pub struct ItemBag {
     bag: Bag,
 }
+
 impl ItemBag {
     pub fn new() -> ItemBag {
         ItemBag {
@@ -13,7 +14,7 @@ impl ItemBag {
         }
     }
     //init with vec of strings
-    // pub fn new(items: &Vec<String>) -> ItemBag {
+    // pub fn gen_new(items: &Vec<String>) -> ItemBag {
     //     bag: Bag::with_capacity(items.len());
     //     for s in items {
     //         bag.add(s);

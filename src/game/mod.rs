@@ -18,6 +18,7 @@ pub struct Game {
     //...
 }
 
+
 impl State for Game {
     //qs state trait handles window rendering
     fn new() -> Result<Self> {
@@ -45,7 +46,8 @@ impl State for Game {
                                                   // let mut players = Vec::<player::Player>::new();
                                                   // players.push(player::Player::new())
         let mut player = player::Player::new();
-        player.add_tool(&"Blue Towel".to_string()); // T ???
+         // T ???
+        
 
         let chs = "xOXo";
         let tile_size_px = Vector::new(10, 24);

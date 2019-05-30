@@ -61,6 +61,21 @@ impl Map {
     }
 
 }
+#[test]
+fn test_is_on_board(){
+    let m = Map::new(10.0,10.0);
+
+    let p1 = m.is_on_board(Vector::new(0.0,0.0));
+    let p2 = m.is_on_board(Vector::new(10.0,10.0));
+    let p3 = m.is_on_board(Vector::new(5.0,5.0));
+
+    let pf1 = m.is_on_board(Vector::new(-1.0,-1.0));
+    let pf2 = m.is_on_board(Vector::new(11.0,10.1));
+    let pf3 = m.is_on_board(Vector::new(5.0,15.0));
+
+    assert_eq!((p1, p2, p3), (true, true, true));
+    assert_eq!((pf1,pf2,pf3),(false, false, false));
+}
 
 // impl Iterator for Map {
 //     type item = Tile;

@@ -48,3 +48,25 @@ impl Player {
         false
     }
 }
+
+
+#[test]
+        fn test_player_satchel_add_count(){
+            let mut player = Player::new();
+            let tool = "Blue Towel".to_string();
+            let tool1 = "Red Towel".to_string();
+            player.add_tool(&tool);
+            let has_tool = player.has_tool(&tool);
+            let tool_count = player.satchel.count(&tool);
+           assert_eq!(has_tool, true);
+           assert_eq!(tool_count, 1);
+           player.add_tool(&tool);
+           player.add_tool(&tool);
+           player.add_tool(&tool1);
+           player.add_tool(&tool1);
+           let tool_count = player.satchel.count(&tool);
+           assert_eq!(tool_count, 3);
+           let tool_count = player.satchel.count(&tool1);
+           assert_eq!(tool_count, 2);
+
+         }
