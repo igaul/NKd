@@ -5,4 +5,4 @@ authors = ["gaul <gaul@pdx.edu>"]
 edition = "2018"
 
 [dependencies]
-quicksilver = { version = "0.3.10"} # xxx remove unused, default-features = false, features = [xxx...]}
+quicksilver = { version = "0.3.10", default-features = false, features = ["fonts"]}

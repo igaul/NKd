@@ -2,14 +2,14 @@
 //
 //
 use quicksilver::{geom::Vector, graphics::Color};
-
+use super::item_bag::ItemBag as Bag;
 pub struct Player {
     pub pos: Vector,
     pub ch: char, // xxx
     pub money: i32,
     pub energy: i32,
     pub name: String,
-    pub satchel: super::item_bag::ItemBag,
+    pub satchel: Bag,
     pub color: Color,
 }
 
@@ -21,7 +21,7 @@ impl Player {
             money: 50,
             energy: 80,
             name: "mike".to_string(), // make add
-            satchel: super::item_bag::ItemBag::new(),
+            satchel: Bag::new(),
             color: Color::RED,
         }
     }

@@ -40,7 +40,7 @@ impl State for Game {
         //pic for experimenting
         let pic = Asset::new(Image::load("testimg1.png"));
         //map
-        let map = game_map::Map::gen(20.0, 20.0); // xxx use window size?
+        let map = game_map::Map::gen(20, 20); // xxx use window size?
                                                   //characters
                                                   //break up into fei
                                                   // let mut players = Vec::<player::Player>::new();
@@ -76,21 +76,29 @@ impl State for Game {
             controls,
         })
     }
-    /// Process keyboard and mouse, update the game state
+    /// Process keyboard and mouse, update the game state //move to player ???
     fn update(&mut self, window: &mut Window) -> Result<()> {
         use ButtonState::*;
 
         if window.keyboard()[Key::Left] == Pressed || window.keyboard()[Key::Left] == Held {
-            self.player.pos.x -= 1.0;
+            if self.map.is_on_board(self.player.pos.x - 1.0){
+                self.player.pos.x -= 1.0;
+            }
         }
         if window.keyboard()[Key::Right] == Pressed || window.keyboard()[Key::Right] == Held {
-            self.player.pos.x += 1.0;
+            if self.map.is_on_board(self.player.pos.x + 1.0){
+                self.player.pos.x += 1.0;
+            }
         }
         if window.keyboard()[Key::Up] == Pressed {
-            self.player.pos.y -= 1.0;
+            if self.map.is_on_board(self.player.pos.y - 1.0){
+                self.player.pos.y -= 1.0;
+            }
         }
         if window.keyboard()[Key::Down] == Pressed {
-            self.player.pos.y += 1.0;
+            if self.map.is_on_board(self.player.pos.y + 1.0){
+                self.player.pos.y - 1.0;
+            }
         }
         if window.keyboard()[Key::A] == Pressed || window.keyboard()[Key::A] == Held {
             self.player.money -= 10; // xxx

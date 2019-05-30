@@ -32,13 +32,13 @@ impl Map {
             map: Vec::with_capacity((x * y) as usize),
         }
     }
-    pub fn gen(x: f32, y: f32) -> Map {
-        let mut m = Map::new(x, y);
-        for i in 0..x as i32 {
-            for j in 0..y as i32 {
+    pub fn gen(x: i32, y: i32) -> Map {
+        let mut m = Map::new(x as f32, y as f32);
+        for i in 0..x {
+            for j in 0..y {
                 let mut t = Tile {
                     pos: Vector::new(i as f32, j as f32),
-                    id: i + (j * x as i32),
+                    id: i + (j * x),
                     ch: 'x',
                     chance_val: 1,
                     fare: 2,
@@ -46,7 +46,7 @@ impl Map {
                     color: Color::BLUE,
                     reqs: ["Blue towel".to_string()].to_vec(),
                 };
-                if i == 0 || i == x as i32 - 1 || j == 0 || j == y as i32 - 1 {
+                if i == 0 || i == x  - 1 || j == 0 || j == y {
                     t.ch = 'O';
                 };
                 m.map.push(t);
@@ -54,7 +54,6 @@ impl Map {
         }
         m
     }
-
     pub fn is_on_board(&self, o_pos: Vector) -> bool {
         (o_pos.x >= 0.0 && o_pos.x <= self.size.x) &&
         (o_pos.y >= 0.0 && o_pos.y <= self.size.y)
@@ -76,7 +75,7 @@ fn test_is_on_board(){
     assert_eq!((p1, p2, p3), (true, true, true));
     assert_eq!((pf1,pf2,pf3),(false, false, false));
 }
-
+//test map gen
 // impl Iterator for Map {
 //     type item = Tile;
 //     fn next(&mut self)-> Option<Tile> {
