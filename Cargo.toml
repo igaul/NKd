@@ -1,5 +1,5 @@
 [package]
-name = "NKd"
+name = "nkd"
 version = "0.1.0"
 authors = ["gaul <gaul@pdx.edu>"]
 edition = "2018"

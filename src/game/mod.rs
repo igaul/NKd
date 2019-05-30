@@ -1,7 +1,7 @@
 //game.rs
 //game manager
 
-use quicksilver::prelude::*; //reduce?
+use quicksilver::prelude::*;
 pub mod game_map;
 pub mod item_bag;
 pub mod player;
@@ -45,7 +45,8 @@ impl State for Game {
                                                   //break up into fei
                                                   // let mut players = Vec::<player::Player>::new();
                                                   // players.push(player::Player::new())
-        let player = player::Player::new();
+        let mut player = player::Player::new();
+        player.add_tool(&"Blue towel".to_string());
          // T ???
         
 
@@ -76,37 +77,48 @@ impl State for Game {
             controls,
         })
     }
+
+    
+
     /// Process keyboard and mouse, update the game state //move to player ???
     fn update(&mut self, window: &mut Window) -> Result<()> {
         use ButtonState::*;
 
-        if window.keyboard()[Key::Left] == Pressed {//|| window.keyboard()[Key::Left] == Held {
-            if self.map.is_on_board_x(self.player.pos.x - 1.0){
-                self.player.pos.x -= 1.0;
-            }
-        }
-        if window.keyboard()[Key::Right] == Pressed {//|| window.keyboard()[Key::Right] == Held {
-            if self.map.is_on_board_x(self.player.pos.x + 1.0){
+        if window.keyboard()[Key::Left] == Pressed {//is down? {
+            self.player.pos.x -= 1.0;
+            if !self.map.is_on_board(self.player.pos) || !self.player.can_move(&self.map.get_tile(&self.player.pos).reqs){ //compare tile requirements to player's items
                 self.player.pos.x += 1.0;
             }
+            self.dump_stats();
+        }
+        if window.keyboard()[Key::Right] == Pressed {
+            self.player.pos.x += 1.0;
+            if !self.map.is_on_board(self.player.pos) || !self.player.can_move(&self.map.get_tile(&self.player.pos).reqs){ //rewire to player bag to tile reqs ???
+                self.player.pos.x -= 1.0;
+            }
+            self.dump_stats();
         }
         if window.keyboard()[Key::Up] == Pressed {
-            if self.map.is_on_board_y(self.player.pos.y - 1.0){
-                self.player.pos.y -= 1.0;
-            }
-        }
-        if window.keyboard()[Key::Down] == Pressed {
-            if self.map.is_on_board_y(self.player.pos.y + 1.0){
+            self.player.pos.y -= 1.0;
+            if !self.map.is_on_board(self.player.pos) || !self.player.can_move(&self.map.get_tile(&self.player.pos).reqs) {
                 self.player.pos.y += 1.0;
             }
+            self.dump_stats();
         }
-        if window.keyboard()[Key::A] == Pressed || window.keyboard()[Key::A] == Held {
+        if window.keyboard()[Key::Down] == Pressed {
+            self.player.pos.y += 1.0;
+            if !self.map.is_on_board(self.player.pos) || !self.player.can_move(&self.map.get_tile(&self.player.pos).reqs) {
+                self.player.pos.y -= 1.0;
+            }
+            self.dump_stats();
+        }
+        if window.keyboard()[Key::A].is_down() {
             self.player.money -= 10; // xxx
             if self.player.money < 0 {
                 self.player.money = 0;
             }
         }
-        if window.keyboard()[Key::S] == Pressed || window.keyboard()[Key::S] == Held {
+        if window.keyboard()[Key::S].is_down() {
             self.player.money += 10; // xxx
         }
         if window.keyboard()[Key::Z] == Pressed {
@@ -121,6 +133,7 @@ impl State for Game {
         if window.keyboard()[Key::Escape].is_down() {
             window.close();
         }
+        
         Ok(()) //ret ok void
     }
 
@@ -201,8 +214,8 @@ impl State for Game {
 
         let p1 = &self.player;
         let max_bar = 100.0;
-        let curr_power = p1.energy as f32 % max_bar;//add checks
-        let curr_money = p1.money as f32 % max_bar; // xxx make min/max
+        let curr_power = p1.energy as f32;//add checks
+        let curr_money = p1.money as f32; // xxx make min/max
         let power_bar_pos_px = offset_px + Vector::new(map_size_px.x, 0.0);
         let money_bar_pos_px = offset_px + Vector::new(map_size_px.x, tile_size_px.y);
         let inventory_pos_px = offset_px + Vector::new(map_size_px.x, tile_size_px.y * 2.0);
@@ -249,5 +262,17 @@ impl State for Game {
 }
 //end impl state for game
 
+impl Game {
+    //dump stats xxx
+    pub fn dump_stats(&self) {
+        println!("\nPpos: {} - {}\nTpos: {} - {}\npow: {}\nmoney: {}\n",  
+        self.player.pos.x, self.player.pos.y,
+        self.map.get_tile(&self.player.pos).pos.x,
+        self.map.get_tile(&self.player.pos).pos.y,
+        self.player.energy,
+        self.player.money
+        );//xxx debug to terminal
+    }
 
+}
 //tests or in test file

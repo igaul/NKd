@@ -46,17 +46,32 @@ impl Map {
                     color: Color::BLUE,
                     reqs: ["Blue towel".to_string()].to_vec(),
                 };
-                if i == 0 || i == x  - 1 || j == 0 || j == y - 1{
+                if i == 0 || i == x  - 1 {
                     t.ch = 'O';
+                    t.color = Color::GREEN;
+                    t.reqs.push("Green towel".to_string());
                 };
+                if j == 0 || j == y - 1 {
+                    t.ch = 'O';
+                    t.color = Color::ORANGE;
+                    t.reqs.push("Orange towel".to_string());
+                }
                 m.map.push(t);
             }
         }
         m
     }
+    pub fn get_tile(&self, pos: &Vector) -> &Tile { // result ???
+        let mut i = 0.0; //make default reqs xxx ???
+        if self.is_on_board(*pos){
+            i = pos.x + pos.y * self.size.x; //must be usizable
+        }      
+        &self.map[i as usize]
+    }
+
     pub fn is_on_board(&self, o_pos: Vector) -> bool { // make into vector trait ???
-        (o_pos.x >= 0.0 && o_pos.x <= self.size.x) &&
-        (o_pos.y >= 0.0 && o_pos.y <= self.size.y)
+        (o_pos.x >= 0.0 && o_pos.x <= self.size.x - 1.0) &&
+        (o_pos.y >= 0.0 && o_pos.y <= self.size.y - 1.0)
     }
     pub fn is_on_board_x(&self, other: f32) -> bool { //<T: Into<f32>>
         (other >= 0.0 && other <= self.size.x - 1.0)
@@ -71,7 +86,7 @@ fn test_is_on_board(){
     let m = Map::new(10.0,10.0);
 
     let p1 = m.is_on_board(Vector::new(0.0,0.0));
-    let p2 = m.is_on_board(Vector::new(10.0,10.0));
+    let p2 = m.is_on_board(Vector::new(9.0,9.0));
     let p3 = m.is_on_board(Vector::new(5.0,5.0));
 
     let pf1 = m.is_on_board(Vector::new(-1.0,-1.0));
@@ -86,23 +101,23 @@ fn test_is_on_board_x_y(){
     let m = Map::new(10.0,10.0);
 
     let p1 = m.is_on_board_x(0.0);
-    let p2 = m.is_on_board_x(10.0);
+    let p2 = m.is_on_board_x(9.0);
     let p3 = m.is_on_board_x(5.0);
 
     let pf1 = m.is_on_board_x(-1.0);
-    let pf2 = m.is_on_board_x(11.0);
-    let pf3 = m.is_on_board_x(10.1);
+    let pf2 = m.is_on_board_x(10.0);
+    let pf3 = m.is_on_board_x(100.1);
 
     assert_eq!((p1, p2, p3), (true, true, true));
     assert_eq!((pf1,pf2,pf3),(false, false, false));
 
     let p1 = m.is_on_board_y(0.0);
-    let p2 = m.is_on_board_y(10.0);
+    let p2 = m.is_on_board_y(9.0);
     let p3 = m.is_on_board_y(5.0);
 
     let pf1 = m.is_on_board_y(-1.0);
-    let pf2 = m.is_on_board_y(11.0);
-    let pf3 = m.is_on_board_y(10.1);
+    let pf2 = m.is_on_board_y(10.0);
+    let pf3 = m.is_on_board_y(100.1);
 
     assert_eq!((p1, p2, p3), (true, true, true));
     assert_eq!((pf1,pf2,pf3),(false, false, false));

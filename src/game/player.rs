@@ -41,14 +41,18 @@ impl Player {
         // }
         self.satchel.contents_as_strings().join("\n")
     }
-    pub fn can_move(&self, next: &super::game_map::Tile) -> bool {
-        if self.satchel.compare_to_tile_reqs(&next.reqs) == "" {
+    pub fn can_move(&self, next: &Vec<String>/* &super::game_map::Tile */) -> bool {
+        println!("item: {:?}\npos: {} - {}", self.satchel.compare_to_tile_reqs(&next), self.pos.x, self.pos.y);//xxx debug to terminal
+        if self.satchel.compare_to_tile_reqs(&next) == "" {
             return true
         }
         false
     }
 }
-
+// #[test]
+// fn test_can_move() {
+    
+// }
 
 #[test]
         fn test_player_satchel_add_count(){
