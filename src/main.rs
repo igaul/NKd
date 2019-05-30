@@ -7,11 +7,8 @@
 ///
 extern crate quicksilver;
 
-//pub mod game_map;
 pub mod game;
-// pub mod item_bag;
-// /////mod tile;
-// mod player;
+
 
 fn main() {
     // call copied from qs:
@@ -30,7 +27,7 @@ fn main() {
 
     quicksilver::lifecycle::run::<game::Game>(
         "NKd",
-        quicksilver::geom::Vector::new(800, 600),
+        quicksilver::geom::Vector::new(800, 600),//set size... 60fps
         settings,
     );
 }
