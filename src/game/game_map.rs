@@ -56,8 +56,8 @@ impl Map {
     }
 
     pub fn is_on_board(&self, o_pos: Vector) -> bool {
-        (o_pos.x >= 0 && o_pos.x <= self.size.x) &&
-        (o_pos.y >= 0 && o_pos.y <= self.size.y)
+        (o_pos.x >= 0.0 && o_pos.x <= self.size.x) &&
+        (o_pos.y >= 0.0 && o_pos.y <= self.size.y)
     }
 
 }

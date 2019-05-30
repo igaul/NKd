@@ -80,6 +80,16 @@ impl ItemBag {
         }
         s
     }
+    pub fn contents_as_strings(&self) -> Vec<String> {
+    let mut m: Vec<String> = Vec::with_capacity(self.bag.len());
+    for (k,v) in self.bag.iter() {
+        let mut t: String = k.to_string();
+        t.push_str(&v.to_string());
+        m.push(t);
+    }
+    m
+    //self.bag.iter().map(|(x,y)| x.push_str(y.to_string())).collect()
+    }
     // //returns vec<String,int> contents of bag
     // pub fn contents(&self) -> Vec<(String, i32)> {
     //     //self.bag.iter().cloned().map().collect()
@@ -89,16 +99,7 @@ impl ItemBag {
     //     }
     //     m
     // }
-    // pub fn contents_as_strings(&self) -> Vec<String> {
-    //     let mut m: Vec<String> = Vec::with_capacity(self.bag.len());
-    //     for (k,v) in self.bag.iter() {
-    //         let mut t: String = k.to_string();
-    //         t.push_str(&v.to_string());
-    //         m.push(t);
-    //     }
-    //     m
-    //     //self.bag.iter().map(|(x,y)| x.push_str(y.to_string())).collect()
-    // }
+
    
     // #[test]
     // fn test_contents_as_strings() {
