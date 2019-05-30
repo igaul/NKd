@@ -23,16 +23,11 @@ pub struct Tile {
 pub struct Map {
     pub map: Vec<Tile>, //???
     pub size: Vector,
-    // x_size: i32,
-    // y_size: i32,
 }
 
 impl Map {
     pub fn new(x: f32, y: f32) -> Map {
         Map {
-            // y_size : y,
-            // x_size : x,
-            // size : y * x,
             size: Vector::new(x, y),
             map: Vec::with_capacity((x * y) as usize),
         }
@@ -59,6 +54,12 @@ impl Map {
         }
         m
     }
+
+    pub fn is_on_board(&self, o_pos: Vector) -> bool {
+        (o_pos.x >= 0 && o_pos.x <= self.size.x) &&
+        (o_pos.y >= 0 && o_pos.y <= self.size.y)
+    }
+
 }
 
 // impl Iterator for Map {

@@ -2,9 +2,7 @@
 //hashmap to hold items as String:count
 
 pub type Bag = std::collections::HashMap<String, i32>; //or str??
-//--> switch to bag, remove itembad struct --> move to tools
-//#[derive(Clone, Debug, PartialEq)]
-//fn clone(&self) -> Self {
+
 pub struct ItemBag {
     bag: Bag,
 }
@@ -34,7 +32,7 @@ impl ItemBag {
         }
     }
     //empty bag
-    pub fn dump(mut self) {
+    pub fn empty_bag(mut self) {
         self.bag.clear()
     }
     //insert
@@ -49,8 +47,9 @@ impl ItemBag {
     pub fn remove(&mut self, item: &String) {
         if self.count(item) > 1 {
             self.bag.insert(item.to_string(), self.count(item) - 1);
+        } else {
+            self.bag.remove(item);
         }
-        self.bag.remove(item);
     }
     //compare this to that, return first item this does not have or empty string //change to result ???
     pub fn compare(&self, other: Bag) -> String {
@@ -61,34 +60,16 @@ impl ItemBag {
         }
         "".to_string()
     }
-    //comepare to tile reqs ( vec<string> )
-    pub fn compare_to_tile_reqs(&self, other: &Vec<String>) -> String {
+    //compare to tile reqs ( vec<string> )
+    pub fn compare_to_tile_reqs(&self, other: &Vec<String>) -> String { //change to result & match ???
         for k in other {
-            if self.bag.contains_key(k) {
+            if !self.contains(k) {
                 return k.to_string();
             }
         }
         "".to_string()
     }
-    //returns vec<String,int> contents of bag
-    pub fn contents(&self) -> Vec<(String, i32)> {
-        //self.bag.iter().cloned().map().collect()
-        let mut m: Vec<(String, i32)> = Vec::with_capacity(self.bag.len());
-        for (k,v) in self.bag.iter() {
-            m.push((k.to_string(),*v))
-        }
-        m
-    }
-    pub fn contents_as_strings(&self) -> Vec<String> {
-        let mut m: Vec<String> = Vec::with_capacity(self.bag.len());
-        for (k,v) in self.bag.iter() {
-            let mut t: String = k.to_string();
-            t.push_str(&v.to_string());
-            m.push(t);
-        }
-        m
-        //self.bag.iter().map(|(x,y)| x.push_str(y.to_string())).collect()
-    }
+    //???
     pub fn contents_as_a_string(&self) -> String {
         let mut s = "".to_string();
         for (k,v) in self.bag.iter() {
@@ -99,6 +80,26 @@ impl ItemBag {
         }
         s
     }
+    // //returns vec<String,int> contents of bag
+    // pub fn contents(&self) -> Vec<(String, i32)> {
+    //     //self.bag.iter().cloned().map().collect()
+    //     let mut m: Vec<(String, i32)> = Vec::with_capacity(self.bag.len());
+    //     for (k,v) in self.bag.iter() {
+    //         m.push((k.to_string(),*v))
+    //     }
+    //     m
+    // }
+    // pub fn contents_as_strings(&self) -> Vec<String> {
+    //     let mut m: Vec<String> = Vec::with_capacity(self.bag.len());
+    //     for (k,v) in self.bag.iter() {
+    //         let mut t: String = k.to_string();
+    //         t.push_str(&v.to_string());
+    //         m.push(t);
+    //     }
+    //     m
+    //     //self.bag.iter().map(|(x,y)| x.push_str(y.to_string())).collect()
+    // }
+   
     // #[test]
     // fn test_contents_as_strings() {
     //     let b = ItemBag::new();
@@ -111,4 +112,5 @@ impl ItemBag {
     // pub fn contents_to_string(&self) -> String {
 
     // }
+
 }
