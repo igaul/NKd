@@ -239,7 +239,8 @@ impl State for Game {
         );
         //draw inventory
         let font_mono = "FreeMono.ttf"; // xxx new font
-        let player_bag = "aaa";//self.player.contents_to_string();
+        let mut player_bag = "Inventory:\n".to_string();
+        player_bag.push_str(&self.player.contents_to_string());
         let mut inventory = Asset::new(Font::load(font_mono).and_then(move |font| {
             font.render(
                 &player_bag,

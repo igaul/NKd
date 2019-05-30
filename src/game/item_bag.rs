@@ -85,6 +85,7 @@ impl ItemBag {
     let mut m: Vec<String> = Vec::with_capacity(self.bag.len());
     for (k,v) in self.bag.iter() {
         let mut t: String = k.to_string();
+        t.push_str(&": ".to_string());
         t.push_str(&v.to_string());
         m.push(t);
     }
