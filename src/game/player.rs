@@ -11,6 +11,7 @@ pub struct Player {
     pub name: String,
     pub satchel: Bag,
     pub color: Color,
+    pub act: bool,
 }
 
 impl Player {
@@ -23,6 +24,7 @@ impl Player {
             name: "mike".to_string(), // make add
             satchel: Bag::new(),
             color: Color::RED,
+            act: false,
         }
     }
     pub fn has_tool(&self, tool: &String) -> bool {
@@ -41,9 +43,9 @@ impl Player {
         // }
         self.satchel.contents_as_strings().join("\n")
     }
-    pub fn can_move(&self, next: &Vec<String>/* &super::game_map::Tile */) -> bool {
-        println!("item: {:?}\npos: {} - {}", self.satchel.compare_to_tile_reqs(&next), self.pos.x, self.pos.y);//xxx debug to terminal
-        if self.satchel.compare_to_tile_reqs(&next) == "" {
+    pub fn can_move(&self, next: &super::game_map::Tile /*&Vec<String>, fare: i32  */) -> bool {
+        println!("item: {:?}\npos: {} - {}", self.satchel.compare_to_tile_reqs(&next.reqs), self.pos.x, self.pos.y);//xxx debug to terminal
+        if self.satchel.compare_to_tile_reqs(&next.reqs) == "" && self.energy >= next.fare {
             return true
         }
         false
