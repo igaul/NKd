@@ -332,8 +332,7 @@ impl State for Game {
                 Ok(())
             })?;
         }//msg
-
-
+        
         //
         Ok(())
     }

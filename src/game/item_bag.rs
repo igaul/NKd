@@ -90,17 +90,7 @@ impl ItemBag {
         m.push(t);
     }
     m
-    //self.bag.iter().map(|(x,y)| x.push_str(y.to_string())).collect()
     }
-    // //returns vec<String,int> contents of bag
-    // pub fn contents(&self) -> Vec<(String, i32)> {
-    //     //self.bag.iter().cloned().map().collect()
-    //     let mut m: Vec<(String, i32)> = Vec::with_capacity(self.bag.len());
-    //     for (k,v) in self.bag.iter() {
-    //         m.push((k.to_string(),*v))
-    //     }
-    //     m
-    // }
 
    
     // #[test]

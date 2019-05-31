@@ -15,18 +15,7 @@ pub struct Tile {
     pub reqs: Vec<String>, // required items to enter/traverse tile
                      //...
 }
-// impl Default for Tile {
-//     fn default() -> Tile {
-//         pos: quicksilver::geom::Vector::new(0, 0),
-//         id: 0,
-//         ch: 'z'
-//         chance_val: 0,
-//         fare: 99,
-//         seen: false,
-//         color: Color::BLACK,
-//         reqs: Vec<String>::with_capacity(0),
-//     }
-// }
+
 impl Tile {
     pub fn new(pos: Vector, id: i32) -> Tile{
         Tile {
@@ -74,64 +63,6 @@ impl Tile {
 }
 
 
-        // self.ch = tile_type;
-        // self.chance_val = chance_val;
-        // self.fare = fare;
-        // self.color = color;
-        // self.reqs = reqs;
-    
-        // match tile_type {
-        //     'x' => {
-        //         t.chance_val = 1;
-        //         t.fare = 2;
-        //         t.color = Color::from_hex("#006400");//dark green
-        //         t.reqs.push("Blue towel".to_string());
-        //     },
-        //     'O' => {
-        //         t.color = Color::GREEN;
-        //         t.reqs.push("Green towel".to_string());
-        //     },
-        //     'M' => {
-        //         t.fare = 10;
-        //         t.color = Color::from_hex("#A52A2A");//brown ish
-        //         //t.reqs.push("Rope".to_string())
-        //     },
-        //     'o' => {
-        //         t.color = Color::ORANGE;
-        //         t.reqs.push("Orange towel".to_string());
-        //     },
-        //     _ => {},
-        // };
-        // t
-        // match tile_type {
-        //     'x' => Tile {
-        //             pos: Vector::new(pos_x, pos_y),
-        //             id: id,
-        //             ch: tile_type,
-        //             chance_val: 1,
-        //             fare: 2,
-        //             color: Color::BLUE,
-        //             reqs: ["Blue towel".to_string()].to_vec(),
-        //             ..Default::default()
-        //         },
-        //     'm' => Tile {
-        //             pos: Vector::new(pos_x, pos_y),
-        //             id: id,
-        //             ch: tile_type,
-        //             chance_val: 1,
-        //             fare: 10,
-        //             color: Color::from_hex("#A52A2A"),//brown ish
-        //             reqs: ["Rope".to_string()].to_vec(),
-        //             ..Default::default()
-        //         },
-        //     // 'O' => {
-        //     //     t.ch = 'O';
-        //     //         t.color = Color::GREEN;
-        //     //         t.reqs.push("Green towel".to_string());
-        //     // },
-        //     _ => Tile { pos: Vector::new(pos_x, pos_y), id: id, ch: tile_type, ..Default::default() }
-        // }
-    //}
     pub fn set_seen(&mut self, seen: bool) {
         self.seen = seen;
     }
@@ -167,26 +98,7 @@ impl Map {
                     t.auto_mod_tile('m');
                 } 
                 else {t.auto_mod_tile('x');}                
-                //{
-                //     pos: Vector::new(i as f32, j as f32),
-                //     id: i + (j * x),
-                //     ch: 'x',
-                //     chance_val: 1,
-                //     fare: 2,
-                //     seen: false,
-                //     color: Color::BLUE,
-                //     reqs: ["Blue towel".to_string()].to_vec(),
-                // };
-                // if i == 0 || i == x  - 1 {
-                //     t.ch = 'O';
-                //     t.color = Color::GREEN;
-                //     t.reqs.push("Green towel".to_string());
-                // };
-                // if j == 0 || j == y - 1 {
-                //     t.ch = 'O';
-                //     t.color = Color::ORANGE;
-                //     t.reqs.push("Orange towel".to_string());
-                // }
+                
                 m.map.push(t);
             }
         }
@@ -240,7 +152,7 @@ fn test_is_on_board(){
 }
 #[test]
 fn test_is_on_board_x_y(){
-    let m = Map::new(10.0,10.0);
+    let m = Map::new(10,10);
 
     let p1 = m.is_on_board_x(0.0);
     let p2 = m.is_on_board_x(9.0);
