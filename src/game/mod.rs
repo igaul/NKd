@@ -17,6 +17,7 @@ pub struct Game {
     controls: Asset<Image>,
     msg: String,
     display_msg: bool,
+    msg_asset: Asset<Image>,
     //inventory: Asset<Image>,
     //...
 }
@@ -41,8 +42,15 @@ impl State for Game {
             )
         }));
         //message
-        let msg = "".to_string();
+        let msg = "Missing: ".to_string();
         let display_msg = false;
+        let msg_clone = msg.clone();
+        let msg_asset = Asset::new(Font::load(font_mono).and_then(move |font| {
+            font.render(
+                &msg_clone,
+                &FontStyle::new(20.0, Color::BLACK),
+            )
+        }));
         //pic for experimenting
         let pic = Asset::new(Image::load("testimg1.png"));
         //map
@@ -98,6 +106,7 @@ impl State for Game {
             controls,
             msg,
             display_msg,
+            msg_asset,
         })
     }
 
@@ -176,6 +185,7 @@ impl State for Game {
             self.player.pos = curr_pos;
             self.player.energy -=  self.map.get_tile(&curr_pos).fare;
             self.map.get_mut_tile(curr_pos).seen = true;
+            self.player.money += 5;
              self.display_msg = false;
              self.msg.clear();
             self.dump_stats();
@@ -295,6 +305,16 @@ impl State for Game {
             &Rectangle::new(money_bar_pos_px, (curr_money, tile_size_px.y)),
             Col(Color::GREEN),
         );
+
+        //msg alert for wasm page xxx
+        let mut act_width_px = 0.0;
+        if self.display_msg {
+            act_width_px = tile_size_px.x;
+        }
+        window.draw(
+            &Rectangle::new(money_bar_pos_px + tile_size_px, (act_width_px, tile_size_px.y)),
+            Col(Color::BLUE),
+        );
         //draw inventory
         let font_mono = "FreeMono.ttf"; // xxx new font
         let mut player_bag = "Inventory:\n".to_string();
@@ -307,23 +327,26 @@ impl State for Game {
         }));
         inventory.execute(|image| {
             window.draw(
-                &image.area()
-                .translate(inventory_pos_px),
+                // &image.area()
+                // .translate(inventory_pos_px),
+                &Rectangle::new(inventory_pos_px, image.area().size()),
                 Img(&image),
             );
             Ok(())
         })?;
         //draw msg, if exists
-        if self.display_msg {
-            let mut missing = "Missing: ".to_string();
-            missing.push_str(&self.msg);
-            let mut missing_asset = Asset::new(Font::load(font_mono).and_then(move |font| {
+        //let mut missing = "Missing: ".to_string();
+        //missing.push_str(&self.msg);
+        let miss_clone = self.msg.clone();
+        self.msg_asset = Asset::new(Font::load(font_mono).and_then(move |font| {
                 font.render(
-                    &missing,
+                    &miss_clone,
                     &FontStyle::new(20.0, Color::BLACK),
                 )
             }));
-            missing_asset.execute(|image| {
+        if self.display_msg {
+            
+            self.msg_asset.execute(|image| {
                 window.draw(
                     &image.area()
                     .with_center((window.screen_size().x as i32 / 2, 80)),
@@ -332,7 +355,7 @@ impl State for Game {
                 Ok(())
             })?;
         }//msg
-        
+
         //
         Ok(())
     }
