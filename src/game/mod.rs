@@ -50,7 +50,7 @@ impl State for Game {
          // T ???
         
 
-        let chs = "xOXoAQ";
+        let chs = "xOXoAQm";
         let tile_size_px = Vector::new(10, 24);
         let tileset = Asset::new(Font::load(font_mono).and_then(move |text| {
             let tiles = text
@@ -83,32 +83,48 @@ impl State for Game {
     /// Process keyboard and mouse, update the game state //move to player ???
     fn update(&mut self, window: &mut Window) -> Result<()> {
         use ButtonState::*;
-
+        let mut curr_pos = self.player.pos;
         if window.keyboard()[Key::Left] == Pressed {//is down? {
-            self.player.pos.x -= 1.0;
-            if !self.map.is_on_board(self.player.pos) || !self.player.can_move(&self.map.get_tile(&self.player.pos).reqs){ //compare tile requirements to player's items
-                self.player.pos.x += 1.0;
+            curr_pos.x -= 1.0;
+            if !self.map.is_on_board(curr_pos) || !self.player.can_move(&self.map.get_tile(&curr_pos)){ //compare tile requirements to player's items
+                curr_pos.x += 1.0;
+            }
+            else {
+                self.player.energy -=  self.map.get_tile(&curr_pos).fare;
+                self.map.get_mut_tile(curr_pos).seen = true;
             }
             self.dump_stats();
         }
         if window.keyboard()[Key::Right] == Pressed {
-            self.player.pos.x += 1.0;
-            if !self.map.is_on_board(self.player.pos) || !self.player.can_move(&self.map.get_tile(&self.player.pos).reqs){ //rewire to player bag to tile reqs ???
-                self.player.pos.x -= 1.0;
+            curr_pos.x += 1.0;
+            if !self.map.is_on_board(curr_pos) || !self.player.can_move(&self.map.get_tile(&curr_pos)){ //rewire to player bag to tile reqs ???
+                curr_pos.x -= 1.0;
+            }
+            else {
+                self.player.energy -=  self.map.get_tile(&curr_pos).fare;
+                self.map.get_mut_tile(curr_pos).seen = true;
             }
             self.dump_stats();
         }
         if window.keyboard()[Key::Up] == Pressed {
-            self.player.pos.y -= 1.0;
-            if !self.map.is_on_board(self.player.pos) || !self.player.can_move(&self.map.get_tile(&self.player.pos).reqs) {
-                self.player.pos.y += 1.0;
+            curr_pos.y -= 1.0;
+            if !self.map.is_on_board(curr_pos) || !self.player.can_move(&self.map.get_tile(&curr_pos)) {
+                curr_pos.y += 1.0;
+            }
+            else {
+                self.player.energy -=  self.map.get_tile(&curr_pos).fare;
+                self.map.get_mut_tile(curr_pos).seen = true;
             }
             self.dump_stats();
         }
         if window.keyboard()[Key::Down] == Pressed {
-            self.player.pos.y += 1.0;
-            if !self.map.is_on_board(self.player.pos) || !self.player.can_move(&self.map.get_tile(&self.player.pos).reqs) {
-                self.player.pos.y -= 1.0;
+            curr_pos.y += 1.0;
+            if !self.map.is_on_board(curr_pos) || !self.player.can_move(&self.map.get_tile(&curr_pos)) {
+                curr_pos.y -= 1.0;
+            }
+            else {
+                self.player.energy -=  self.map.get_tile(&curr_pos).fare;
+                self.map.get_mut_tile(curr_pos).set_seen(true);
             }
             self.dump_stats();
         }
@@ -133,7 +149,9 @@ impl State for Game {
         if window.keyboard()[Key::Escape].is_down() {
             window.close();
         }
-        
+        //update player pos
+        self.player.pos = curr_pos;
+
         Ok(()) //ret ok void
     }
 
@@ -264,16 +282,17 @@ impl State for Game {
 //end impl state for game
 
 impl Game {
-    //dump stats xxx
+    //dump stats to terminal on move xxx
     pub fn dump_stats(&self) {
-        println!("\nPpos: {} - {}\nTpos: {} - {} id: {}\npow: {}\nmoney: {}\n",  
+        println!("\nPpos: {} - {}\nTpos: {} - {} id: {}  seen: {}\npow: {}\nmoney: {}\n",  
         self.player.pos.x, self.player.pos.y,
         self.map.get_tile(&self.player.pos).pos.x,
         self.map.get_tile(&self.player.pos).pos.y,
         self.map.get_tile(&self.player.pos).id,
+        self.map.get_tile(&self.player.pos).seen,
         self.player.energy,
         self.player.money
-        );//xxx debug to terminal
+        );
     }
 
 }
