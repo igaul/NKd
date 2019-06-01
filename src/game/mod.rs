@@ -5,6 +5,7 @@ use quicksilver::prelude::*;
 pub mod game_map;
 pub mod item_bag;
 pub mod player;
+pub mod store;
 
 pub struct Game {
     title: Asset<Image>,
@@ -18,6 +19,8 @@ pub struct Game {
     msg: String,
     display_msg: bool,
     msg_asset: Asset<Image>,
+    store: store::Store,
+    store_asset: Asset<Image>,
     //inventory: Asset<Image>,
     //...
 }
@@ -38,6 +41,16 @@ impl State for Game {
         let controls = Asset::new(Font::load(font_mono).and_then(move |font| {
             font.render(
                 "Conrols:\nUp: North\nDown: South\nLeft: East\nRight: West\nA/S: h\nZ/X: p\nW: act  R: rope\nEsc: quit",
+                &FontStyle::new(20.0, Color::BLACK),
+            )
+        }));
+
+        //store display
+        let store = store::Store::gen_store();
+        let store_clone = store.clone();
+        let store_asset = Asset::new(Font::load(font_mono).and_then(move |font| {
+            font.render(
+                &store_clone.contents_to_strings().join("\n"),
                 &FontStyle::new(20.0, Color::BLACK),
             )
         }));
@@ -107,6 +120,8 @@ impl State for Game {
             msg,
             display_msg,
             msg_asset,
+            store,
+            store_asset,
         })
     }
 
@@ -169,6 +184,15 @@ impl State for Game {
             }
             else {
                 self.player.act = true;
+            }
+        }
+        //activate store
+        if window.keyboard()[Key::M] == Pressed {
+            if self.store.is_active {
+            self.store.is_active = false;
+            }
+            else{
+                self.store.is_active = true;
             }
         }
         if window.keyboard()[Key::R] == Pressed {// xxx add rope
@@ -280,6 +304,19 @@ impl State for Game {
             Ok(())
         })?;
 
+        //draw store ???
+        if self.store.is_active {
+            self.store_asset.execute(|image| {
+                window.draw(
+                    &image
+                        .area()
+                        .with_center((window.screen_size().x as i32 - 150, window.screen_size().y as i32 - 250)),
+                    Img(&image),
+                );
+                Ok(())
+            })?;
+        }
+
         let p1 = &self.player;
         let max_bar = 100.0;
         let curr_power = p1.energy;//add checks
@@ -335,12 +372,13 @@ impl State for Game {
             Ok(())
         })?;
         //draw msg, if exists
-        //let mut missing = "Missing: ".to_string();
-        //missing.push_str(&self.msg);
-        let miss_clone = self.msg.clone();
+        let mut missing = "Missing: ".to_string();
+        missing.push_str(&self.msg);
+        
+        //let miss_clone = self.msg.clone();
         self.msg_asset = Asset::new(Font::load(font_mono).and_then(move |font| {
                 font.render(
-                    &miss_clone,
+                    &missing,
                     &FontStyle::new(20.0, Color::BLACK),
                 )
             }));

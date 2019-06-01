@@ -1,7 +1,8 @@
 //ItemBag
 //hashmap to hold items as name<string>:count<i32>
-
+//use std::collections::HashMap<String, i32> as bag_map;
 pub type Bag = std::collections::HashMap<String, i32>; //or str??
+
 #[derive(Debug, Clone)]
 pub struct ItemBag {
     bag: Bag,
@@ -14,13 +15,21 @@ impl ItemBag {
         }
     }
     //init with vec of strings
-    // pub fn gen_new(items: &Vec<String>) -> ItemBag {
-    //     bag: Bag::with_capacity(items.len());
-    //     for s in items {
-    //         bag.add(s);
-    //     }
-    //     bag
-    // }
+    pub fn gen_new(items: &Vec<String>) -> ItemBag {
+        let mut b = Bag::with_capacity(items.len());
+        for s in items {
+            b.insert(s.to_string(), 1);
+        }
+        ItemBag {bag: b}
+    }
+    //gen with values
+      pub fn gen_bag_with_vals(items: &Vec<(&str, i32)>) -> ItemBag {
+        let mut b = Bag::with_capacity(items.len());
+        for (k,v) in items {
+            b.insert(k.to_string(),*v);
+        }
+        ItemBag {bag: b}
+    }
     pub fn contains(&self, item: &String) -> bool {
         //or &String or &str ???
         self.bag.contains_key(item)
@@ -53,9 +62,9 @@ impl ItemBag {
         }
     }
     //compare this to that, return first item this does not have or empty string //change to result ???
-    pub fn compare(&self, other: Bag) -> String {
+    pub fn compare(&self, other: &Self) -> String {
         for k in self.bag.keys() {
-            if other.contains_key(k) {
+            if other.bag.contains_key(k) {
                 return k.to_string();
             }
         }
