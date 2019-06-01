@@ -13,6 +13,7 @@ pub struct Tile {
     pub seen: bool,      // tile seen by player
     pub color: Color, //replace with sprite
     pub reqs: Vec<String>, // required items to enter/traverse tile
+    
                      //...
 }
 
@@ -29,6 +30,12 @@ impl Tile {
             reqs: Vec::<String>::with_capacity(0),
         }
     }
+    pub fn get_display_ch(&self) -> &char {
+            if self.seen {
+                return &self.ch;
+            }
+            &'x'
+        }
     pub fn mod_tile(&mut self, tile_type: char, chance_val: i32, fare: i32, color: Color, reqs:Vec<String>) {
         self.ch = tile_type;
         self.chance_val = chance_val;
@@ -104,7 +111,7 @@ impl Map {
         }
         m
     }
-    pub fn get_tile(&self, pos: &Vector) -> &Tile { // result ???
+    pub fn get_tile(&self, pos: &Vector) -> &Tile { // option ???
         let mut i = 0.0; //make default reqs xxx ???
         if self.is_on_board(*pos){
             i = pos.y + pos.x * self.size.x; //must be usizable
@@ -133,7 +140,16 @@ impl Map {
     pub fn is_on_board_y(&self, other: f32) -> bool {
         (other >= 0.0 && other <= self.size.y - 1.0)
     }
-
+    //tiles to be unshrouded
+    pub fn unshroud_dis_x(&mut self, pos: &Vector, dis: i32) {
+        //let top_left = (pos.x - 2.0, pos.y - 2.0 );
+        for x in 0..(dis*2 + 1) { //offset range nonneg
+            for y in 0..(dis*2 + 1) {
+                let offset = Vector::new(x as i32 - dis,y as i32 - dis);// xxx
+                self.get_mut_tile(*pos + offset).set_seen(true);
+            } 
+        }
+    }
 }
 #[test]
 fn test_is_on_board(){

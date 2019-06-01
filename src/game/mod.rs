@@ -208,10 +208,13 @@ impl State for Game {
         if moved {
             self.player.pos = curr_pos;
             self.player.energy -=  self.map.get_tile(&curr_pos).fare;
-            self.map.get_mut_tile(curr_pos).seen = true;
+            //self.map.get_mut_tile(curr_pos).seen = true;
             self.player.money += 5;
              self.display_msg = false;
              self.msg.clear();
+
+             //update tiles
+            self.map.unshroud_dis_x(&curr_pos, 2);
             self.dump_stats();
         }
         else { //return missing item for display
@@ -269,7 +272,7 @@ impl State for Game {
         );
         tileset.execute(|tileset| {
             for tile in map.map.iter() {
-                if let Some(image) = tileset.get(&tile.ch) {
+                if let Some(image) = tileset.get(&tile.get_display_ch()) {
                     let pos_px = tile.pos.times(tile_size_px);
                     window.draw(
                         &Rectangle::new(offset_px + pos_px, image.area().size()),
