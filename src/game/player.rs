@@ -27,13 +27,13 @@ impl Player {
             act: false,
         }
     }
-    pub fn has_tool(&self, tool: &String) -> bool {
+    pub fn has_tool(&self, tool: &str) -> bool {
         self.satchel.contains(tool)
     }
-    pub fn add_tool(&mut self, tool: &String) {
+    pub fn add_tool(&mut self, tool: &str) {
         self.satchel.add(tool)
     }
-    pub fn remove_tool(&mut self, tool: &String) {
+    pub fn remove_tool(&mut self, tool: &str) {
         self.satchel.remove(tool)
     }
     pub fn contents_to_string(&self) -> String {

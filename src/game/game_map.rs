@@ -124,7 +124,7 @@ impl Map {
         }
         m
     }
-    pub fn get_tile(&self, pos: &Vector) -> &Tile {
+    pub fn get_tile(&self, pos: Vector) -> &Tile {
         // option ???
         let mut i = 0.0; //make default reqs xxx ???
         if self.is_on_board(pos) {
@@ -132,19 +132,20 @@ impl Map {
         }
         &self.map[i as usize]
     }
-    pub fn get_mut_tile(&mut self, pos: &Vector) -> &mut Tile {
-        let mut i = 0.0;
-        if self.is_on_board(pos) {
-            i = pos.y + pos.x * self.size.x;
-        }
+    pub fn get_mut_tile(&mut self, pos: Vector) -> &mut Tile {
+        let i = if self.is_on_board(pos) {
+            pos.y + pos.x * self.size.x
+        } else {
+            0.0
+        };
         &mut self.map[i as usize]
     }
 
-    pub fn pos_to_tile_id(pos: &Vector, width: f32) -> usize {
+    pub fn pos_to_tile_id(pos: Vector, width: f32) -> usize {
         (pos.y + pos.x * width) as usize
     }
 
-    pub fn is_on_board(&self, o_pos: &Vector) -> bool {
+    pub fn is_on_board(&self, o_pos: Vector) -> bool {
         // make into vector trait ???
         (o_pos.x >= 0.0 && o_pos.x <= self.size.x - 1.0)
             && (o_pos.y >= 0.0 && o_pos.y <= self.size.y - 1.0)
@@ -157,13 +158,13 @@ impl Map {
         (other >= 0.0 && other <= self.size.y - 1.0)
     }
     //tiles to be unshrouded
-    pub fn unshroud_dis_x(&mut self, pos: &Vector, dis: i32) {
+    pub fn unshroud_dis_x(&mut self, pos: Vector, dis: i32) {
         //let top_left = (pos.x - 2.0, pos.y - 2.0 );
-        for x in 0..(dis * 2 + 1) {
+        for x in 0..=dis * 2 {
             //offset range nonneg
-            for y in 0..(dis * 2 + 1) {
+            for y in 0..=dis * 2 {
                 let offset = Vector::new(x as i32 - dis, y as i32 - dis); // xxx
-                self.get_mut_tile(&(*pos + offset)).set_seen(true);
+                self.get_mut_tile(pos + offset).set_seen(true);
             }
         }
     }
@@ -177,13 +178,13 @@ mod tests {
     fn test_is_on_board() {
         let m = Map::new(10, 10);
 
-        let p1 = m.is_on_board(&Vector::new(0.0, 0.0));
-        let p2 = m.is_on_board(&Vector::new(9, 9));
-        let p3 = m.is_on_board(&Vector::new(5.0, 5.0));
+        let p1 = m.is_on_board(Vector::new(0.0, 0.0));
+        let p2 = m.is_on_board(Vector::new(9, 9));
+        let p3 = m.is_on_board(Vector::new(5.0, 5.0));
 
-        let pf1 = m.is_on_board(&Vector::new(-1.0, -1.0));
-        let pf2 = m.is_on_board(&Vector::new(9.0, 9.1));
-        let pf3 = m.is_on_board(&Vector::new(5.0, 15.0));
+        let pf1 = m.is_on_board(Vector::new(-1.0, -1.0));
+        let pf2 = m.is_on_board(Vector::new(9.0, 9.1));
+        let pf3 = m.is_on_board(Vector::new(5.0, 15.0));
 
         assert_eq!(p1 && p2 && p3, true);
         assert_eq!(pf1 && pf2 && pf3, false);;

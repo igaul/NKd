@@ -130,8 +130,8 @@ impl State for Game {
         if window.keyboard()[Key::Left] == Pressed {
             //is down? {
             curr_pos.x -= 1.0;
-            if self.map.is_on_board(&curr_pos)
-                && self.player.can_move(&self.map.get_tile(&curr_pos))
+            if self.map.is_on_board(curr_pos)
+                && self.player.can_move(&self.map.get_tile(curr_pos))
             {
                 //compare tile requirements to player's items
                 moved = true;
@@ -139,8 +139,8 @@ impl State for Game {
         }
         if window.keyboard()[Key::Right] == Pressed {
             curr_pos.x += 1.0;
-            if self.map.is_on_board(&curr_pos)
-                && self.player.can_move(&self.map.get_tile(&curr_pos))
+            if self.map.is_on_board(curr_pos)
+                && self.player.can_move(&self.map.get_tile(curr_pos))
             {
                 //rewire to player bag to tile reqs ???
                 moved = true;
@@ -148,16 +148,16 @@ impl State for Game {
         }
         if window.keyboard()[Key::Up] == Pressed {
             curr_pos.y -= 1.0;
-            if self.map.is_on_board(&curr_pos)
-                && self.player.can_move(&self.map.get_tile(&curr_pos))
+            if self.map.is_on_board(curr_pos)
+                && self.player.can_move(&self.map.get_tile(curr_pos))
             {
                 moved = true;
             }
         }
         if window.keyboard()[Key::Down] == Pressed {
             curr_pos.y += 1.0;
-            if self.map.is_on_board(&curr_pos)
-                && self.player.can_move(&self.map.get_tile(&curr_pos))
+            if self.map.is_on_board(curr_pos)
+                && self.player.can_move(&self.map.get_tile(curr_pos))
             {
                 moved = true;
             }
@@ -208,14 +208,14 @@ impl State for Game {
         //update player if move successful
         if moved {
             self.player.pos = curr_pos;
-            self.player.energy -= self.map.get_tile(&curr_pos).fare;
+            self.player.energy -= self.map.get_tile(curr_pos).fare;
             //self.map.get_mut_tile(curr_pos).seen = true;
             self.player.money += 5;
             self.display_msg = false;
             self.msg.clear();
 
             //update tiles
-            self.map.unshroud_dis_x(&curr_pos, 3); //sets tiles within range x to seen (they are displayed)
+            self.map.unshroud_dis_x(curr_pos, 3); //sets tiles within range x to seen (they are displayed)
                                                    //print current state to terminal // xxx disable
             self.dump_stats();
         } else {
@@ -225,7 +225,7 @@ impl State for Game {
                 self.msg = self
                     .player
                     .satchel
-                    .compare_to_tile_reqs(&self.map.get_tile(&curr_pos).reqs); //gets missing item from tile
+                    .compare_to_tile_reqs(&self.map.get_tile(curr_pos).reqs); //gets missing item from tile
                 self.display_msg = true;
                 self.dump_stats();
             }
@@ -354,9 +354,7 @@ impl State for Game {
         );
 
         //msg alert for wasm page xxx
-        let mut act_width_px = 0.0;
-        if self.display_msg {
-            act_width_px = tile_size_px.x;
+        let act_width_px = if self.display_msg { tile_size_px.x } else { 0.0 };
         }
         window.draw(
             &Rectangle::new(
@@ -416,10 +414,10 @@ impl Game {
             "\nPpos: {} - {}\nTpos: {} - {} id: {}  seen: {}\npow: {}\nmoney: {}\n",
             self.player.pos.x,
             self.player.pos.y,
-            self.map.get_tile(&self.player.pos).pos.x,
-            self.map.get_tile(&self.player.pos).pos.y,
-            self.map.get_tile(&self.player.pos).id,
-            self.map.get_tile(&self.player.pos).seen,
+            self.map.get_tile(self.player.pos).pos.x,
+            self.map.get_tile(self.player.pos).pos.y,
+            self.map.get_tile(self.player.pos).id,
+            self.map.get_tile(self.player.pos).seen,
             self.player.energy,
             self.player.money
         );

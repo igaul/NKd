@@ -15,7 +15,7 @@ impl ItemBag {
         }
     }
     //init with vec of strings
-    pub fn gen_new(items: &Vec<String>) -> ItemBag {
+    pub fn gen_new(items: &[String) -> ItemBag {
         let mut b = Bag::with_capacity(items.len());
         for s in items {
             b.insert(s.to_string(), 1);
@@ -23,19 +23,18 @@ impl ItemBag {
         ItemBag { bag: b }
     }
     //gen with values
-    pub fn gen_bag_with_vals(items: &Vec<(&str, i32)>) -> ItemBag {
+    pub fn gen_bag_with_vals(items: &[(&str, i32)]) -> ItemBag {
         let mut b = Bag::with_capacity(items.len());
         for (k, v) in items {
             b.insert(k.to_string(), *v);
         }
         ItemBag { bag: b }
     }
-    pub fn contains(&self, item: &String) -> bool {
-        //or &String or &str ???
+    pub fn contains(&self, item: &str) -> bool {
         self.bag.contains_key(item)
     }
     //return count
-    pub fn count(&self, item: &String) -> i32 {
+    pub fn count(&self, item: &str) -> i32 {
         match self.bag.get(item) {
             Some(i) => *i,
             None => 0,
@@ -46,7 +45,7 @@ impl ItemBag {
         self.bag.clear()
     }
     //insert
-    pub fn add(&mut self, item: &String) {
+    pub fn add(&mut self, item: &str) {
         if self.bag.contains_key(item) {
             self.bag.insert(item.to_string(), self.count(item) + 1);
         } else {
@@ -54,7 +53,7 @@ impl ItemBag {
         }
     }
     //remove
-    pub fn remove(&mut self, item: &String) {
+    pub fn remove(&mut self, item: &str) {
         if self.count(item) > 1 {
             self.bag.insert(item.to_string(), self.count(item) - 1);
         } else {
@@ -71,7 +70,7 @@ impl ItemBag {
         "".to_string()
     }
     //compare to tile reqs ( vec<string> )
-    pub fn compare_to_tile_reqs(&self, other: &Vec<String>) -> String {
+    pub fn compare_to_tile_reqs(&self, other: &[String]) -> String {
         //change to result & match ???
         for k in other {
             if !self.contains(k) {
