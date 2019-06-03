@@ -4,17 +4,19 @@
 //
 use super::item_bag::ItemBag as Bag;
 #[derive(Debug, Clone)]
-pub struct Store { 
+pub struct Store {
     pub items: Bag,
     pub is_active: bool,
-     }
+}
 impl Store {
     pub fn gen_store() -> Store {
-        Store{
-            items: Bag::gen_bag_with_vals(
-                &vec![("Rope", 50),("Hammer", 25), 
-                ("Ice Cream", 15), ("Face", 100)]
-            ),
+        Store {
+            items: Bag::gen_bag_with_vals(&vec![
+                ("Rope", 50),
+                ("Hammer", 25),
+                ("Ice Cream", 15),
+                ("Face", 100),
+            ]),
             is_active: false,
             //
         }
@@ -26,10 +28,10 @@ impl Store {
         if self.items.contains(item) && *wallet >= self.items.count(item) {
             *wallet -= self.items.count(item);
             true
+        } else {
+            false
         }
-        else{ false }
     }
-    
 }
 //purchase menu, game control
 //tests

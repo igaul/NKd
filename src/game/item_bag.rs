@@ -20,15 +20,15 @@ impl ItemBag {
         for s in items {
             b.insert(s.to_string(), 1);
         }
-        ItemBag {bag: b}
+        ItemBag { bag: b }
     }
     //gen with values
-      pub fn gen_bag_with_vals(items: &Vec<(&str, i32)>) -> ItemBag {
+    pub fn gen_bag_with_vals(items: &Vec<(&str, i32)>) -> ItemBag {
         let mut b = Bag::with_capacity(items.len());
-        for (k,v) in items {
-            b.insert(k.to_string(),*v);
+        for (k, v) in items {
+            b.insert(k.to_string(), *v);
         }
-        ItemBag {bag: b}
+        ItemBag { bag: b }
     }
     pub fn contains(&self, item: &String) -> bool {
         //or &String or &str ???
@@ -71,7 +71,8 @@ impl ItemBag {
         "".to_string()
     }
     //compare to tile reqs ( vec<string> )
-    pub fn compare_to_tile_reqs(&self, other: &Vec<String>) -> String { //change to result & match ???
+    pub fn compare_to_tile_reqs(&self, other: &Vec<String>) -> String {
+        //change to result & match ???
         for k in other {
             if !self.contains(k) {
                 return k.to_string();
@@ -82,7 +83,7 @@ impl ItemBag {
     //???
     pub fn contents_as_a_string(&self) -> String {
         let mut s = "".to_string();
-        for (k,v) in self.bag.iter() {
+        for (k, v) in self.bag.iter() {
             s.push_str(k);
             s.push_str(&" ".to_string());
             s.push_str(&v.to_string());
@@ -91,17 +92,16 @@ impl ItemBag {
         s
     }
     pub fn contents_as_strings(&self) -> Vec<String> {
-    let mut m: Vec<String> = Vec::with_capacity(self.bag.len());
-    for (k,v) in self.bag.iter() {
-        let mut t: String = k.to_string();
-        t.push_str(&": ".to_string());
-        t.push_str(&v.to_string());
-        m.push(t);
-    }
-    m
+        let mut m: Vec<String> = Vec::with_capacity(self.bag.len());
+        for (k, v) in self.bag.iter() {
+            let mut t: String = k.to_string();
+            t.push_str(&": ".to_string());
+            t.push_str(&v.to_string());
+            m.push(t);
+        }
+        m
     }
 
-   
     // #[test]
     // fn test_contents_as_strings() {
     //     let b = ItemBag::new();
@@ -114,5 +114,4 @@ impl ItemBag {
     // pub fn contents_to_string(&self) -> String {
 
     // }
-
 }
