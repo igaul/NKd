@@ -15,7 +15,7 @@ impl ItemBag {
         }
     }
     //init with vec of strings
-    pub fn gen_new(items: &[String) -> ItemBag {
+    pub fn gen_new(items: &[String]) -> ItemBag {
         let mut b = Bag::with_capacity(items.len());
         for s in items {
             b.insert(s.to_string(), 1);
