@@ -1,7 +1,10 @@
 //map.rs
 //
-//move into mod ???
-use quicksilver::{geom::Vector, graphics::Color};
+//
+use quicksilver::{
+    geom::Vector,
+    graphics::Color,
+};
 //derive for comp, vecs...
 #[derive(Clone, Debug, PartialEq, Default)]
 pub struct Tile {
@@ -11,10 +14,10 @@ pub struct Tile {
     pub chance_val: i32, //
     pub fare: i32,       // cost to cross tile
     pub seen: bool,      // tile seen by player
-    pub color: Color,    //replace with sprite
+    pub color: Color,    //replace with sprite ???
     pub reqs: Vec<String>, // required items to enter/traverse tile
 
-                         //...
+    //...
 }
 
 impl Tile {
@@ -235,37 +238,37 @@ mod tests {
         );
 
         assert_eq!(
-            m.get_tile(&p1).seen
-                && m.get_tile(&p2).seen
-                && m.get_tile(&p3).seen
-                && m.get_tile(&p4).seen,
+            m.get_tile(p1).seen
+                && m.get_tile(p2).seen
+                && m.get_tile(p3).seen
+                && m.get_tile(p4).seen,
             false
         );
         assert_eq!(
-            m.get_tile(&p1a).seen
-                && m.get_tile(&p2a).seen
-                && m.get_tile(&p3a).seen
-                && m.get_tile(&p4a).seen,
+            m.get_tile(p1a).seen
+                && m.get_tile(p2a).seen
+                && m.get_tile(p3a).seen
+                && m.get_tile(p4a).seen,
             false
         );
         //unshroud four corners
-        m.unshroud_dis_x(&p1, 2);
-        m.unshroud_dis_x(&p2, 2);
-        m.unshroud_dis_x(&p3, 2);
-        m.unshroud_dis_x(&p4, 2);
+        m.unshroud_dis_x(p1, 2);
+        m.unshroud_dis_x(p2, 2);
+        m.unshroud_dis_x(p3, 2);
+        m.unshroud_dis_x(p4, 2);
 
         assert_eq!(
-            m.get_tile(&p1).seen
-                && m.get_tile(&p2).seen
-                && m.get_tile(&p3).seen
-                && m.get_tile(&p4).seen,
+            m.get_tile(p1).seen
+                && m.get_tile(p2).seen
+                && m.get_tile(p3).seen
+                && m.get_tile(p4).seen,
             true
         ); //points are seen
         assert_eq!(
-            m.get_tile(&p1a).seen
-                && m.get_tile(&p2a).seen
-                && m.get_tile(&p3a).seen
-                && m.get_tile(&p4a).seen,
+            m.get_tile(p1a).seen
+                && m.get_tile(p2a).seen
+                && m.get_tile(p3a).seen
+                && m.get_tile(p4a).seen,
             false
         ); //outside of range are not
     }
