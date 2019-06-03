@@ -5,6 +5,7 @@ use quicksilver::prelude::*;
 pub mod game_map;
 pub mod item_bag;
 pub mod player;
+pub mod store;
 
 pub struct Game {
     title: Asset<Image>,
@@ -17,10 +18,12 @@ pub struct Game {
     controls: Asset<Image>,
     msg: String,
     display_msg: bool,
+    msg_asset: Asset<Image>,
+    store: store::Store,
+    store_asset: Asset<Image>,
     //inventory: Asset<Image>,
     //...
 }
-
 
 impl State for Game {
     //qs state trait handles window rendering
@@ -40,24 +43,38 @@ impl State for Game {
                 &FontStyle::new(20.0, Color::BLACK),
             )
         }));
+
+        //store display
+        let store = store::Store::gen_store();
+        let store_clone = store.clone();
+        let store_asset = Asset::new(Font::load(font_mono).and_then(move |font| {
+            font.render(
+                &store_clone.contents_to_strings().join("\n"),
+                &FontStyle::new(20.0, Color::BLACK),
+            )
+        }));
         //message
-        let msg = "".to_string();
+        let msg = "Missing: ".to_string();
         let display_msg = false;
+        let msg_clone = msg.clone();
+        let msg_asset =
+            Asset::new(Font::load(font_mono).and_then(move |font| {
+                font.render(&msg_clone, &FontStyle::new(20.0, Color::BLACK))
+            }));
         //pic for experimenting
         let pic = Asset::new(Image::load("testimg1.png"));
         //map
         let map = game_map::Map::gen(20, 20); // xxx use window size?
-                                                  //characters
-                                                  //break up into fei
-                                                  // let mut players = Vec::<player::Player>::new();
-                                                  // players.push(player::Player::new())
+                                              //characters
+                                              //break up into fei
+                                              // let mut players = Vec::<player::Player>::new();
+                                              // players.push(player::Player::new())
         let mut player = player::Player::new();
         player.add_tool(&"Blue towel".to_string());
-         // T ???
-        
+        // T ???
 
         let chs = "amoxl";
-        let tile_size_px = Vector::new(10,24);
+        let tile_size_px = Vector::new(10, 24);
         let tileset = Asset::new(Font::load(font_mono).and_then(move |text| {
             let tiles = text
                 .render(chs, &FontStyle::new(tile_size_px.y, Color::WHITE))
@@ -71,7 +88,7 @@ impl State for Game {
             Ok(tileset)
         }));
         let chs = "XALMO";
-        let tile_size_px = Vector::new(10,24);
+        let tile_size_px = Vector::new(10, 24);
         let tileset_upper = Asset::new(Font::load(font_mono).and_then(move |text| {
             let tiles = text
                 .render(chs, &FontStyle::new(tile_size_px.y, Color::WHITE))
@@ -98,10 +115,11 @@ impl State for Game {
             controls,
             msg,
             display_msg,
+            msg_asset,
+            store,
+            store_asset,
         })
     }
-
-    
 
     /// Process keyboard update the game state //move to player ???
     fn update(&mut self, window: &mut Window) -> Result<()> {
@@ -109,31 +127,35 @@ impl State for Game {
         let mut curr_pos = self.player.pos;
         let mut moved = false;
 
-        if window.keyboard()[Key::Left] == Pressed {//is down? {
+        if window.keyboard()[Key::Left] == Pressed {
+            //is down? {
             curr_pos.x -= 1.0;
-            if self.map.is_on_board(curr_pos) && self.player.can_move(&self.map.get_tile(&curr_pos)){ //compare tile requirements to player's items
+            if self.map.is_on_board(curr_pos) && self.player.can_move(&self.map.get_tile(curr_pos))
+            {
+                //compare tile requirements to player's items
                 moved = true;
             }
-            
         }
         if window.keyboard()[Key::Right] == Pressed {
             curr_pos.x += 1.0;
-            if self.map.is_on_board(curr_pos) && self.player.can_move(&self.map.get_tile(&curr_pos)){ //rewire to player bag to tile reqs ???
-                 moved = true;
+            if self.map.is_on_board(curr_pos) && self.player.can_move(&self.map.get_tile(curr_pos))
+            {
+                //rewire to player bag to tile reqs ???
+                moved = true;
             }
-           
         }
         if window.keyboard()[Key::Up] == Pressed {
             curr_pos.y -= 1.0;
-            if self.map.is_on_board(curr_pos) && self.player.can_move(&self.map.get_tile(&curr_pos)) {
-                 moved = true;
+            if self.map.is_on_board(curr_pos) && self.player.can_move(&self.map.get_tile(curr_pos))
+            {
+                moved = true;
             }
-            
         }
         if window.keyboard()[Key::Down] == Pressed {
             curr_pos.y += 1.0;
-            if self.map.is_on_board(curr_pos) && self.player.can_move(&self.map.get_tile(&curr_pos)) {
-                 moved = true;
+            if self.map.is_on_board(curr_pos) && self.player.can_move(&self.map.get_tile(curr_pos))
+            {
+                moved = true;
             }
         }
         if window.keyboard()[Key::A].is_down() {
@@ -157,15 +179,23 @@ impl State for Game {
         if window.keyboard()[Key::W] == Pressed {
             if self.player.act {
                 self.player.act = false;
-            }
-            else {
+            } else {
                 self.player.act = true;
             }
         }
-        if window.keyboard()[Key::R] == Pressed {// xxx add rope
+        //activate store
+        if window.keyboard()[Key::M] == Pressed {
+            if self.store.is_active {
+                self.store.is_active = false;
+            } else {
+                self.store.is_active = true;
+            }
+        }
+        if window.keyboard()[Key::R] == Pressed {
+            // xxx add rope
             if self.player.money >= 50 {
-            self.player.add_tool(&"Rope".to_string());
-            self.player.money -= 50;
+                self.player.add_tool(&"Rope".to_string());
+                self.player.money -= 50;
             }
         }
         if window.keyboard()[Key::Escape].is_down() {
@@ -174,21 +204,28 @@ impl State for Game {
         //update player if move successful
         if moved {
             self.player.pos = curr_pos;
-            self.player.energy -=  self.map.get_tile(&curr_pos).fare;
-            self.map.get_mut_tile(curr_pos).seen = true;
-             self.display_msg = false;
-             self.msg.clear();
+            self.player.energy -= self.map.get_tile(curr_pos).fare;
+            //self.map.get_mut_tile(curr_pos).seen = true;
+            self.player.money += 5;
+            self.display_msg = false;
+            self.msg.clear();
+
+            //update tiles
+            self.map.unshroud_dis_x(curr_pos, 3); //sets tiles within range x to seen (they are displayed)
+                                                  //print current state to terminal // xxx disable
             self.dump_stats();
-        }
-        else { //return missing item for display
-            if self.player.pos != curr_pos { //if a move was attempted
-                self.msg = self.player.satchel
-                            .compare_to_tile_reqs(&self.map.get_tile(&curr_pos).reqs);//gets missing item from tile
+        } else {
+            //return missing item for display
+            if self.player.pos != curr_pos {
+                //if a move was attempted
+                self.msg = self
+                    .player
+                    .satchel
+                    .compare_to_tile_reqs(&self.map.get_tile(curr_pos).reqs); //gets missing item from tile
                 self.display_msg = true;
                 self.dump_stats();
             }
         }
-        
 
         Ok(()) //ret ok void
     }
@@ -210,7 +247,8 @@ impl State for Game {
             Ok(())
         })?;
         //draw image if activated
-        if self.player.act { // xxx
+        if self.player.act {
+            // xxx
             self.pic.execute(|image| {
                 window.draw(
                     &image.area().with_center((
@@ -235,11 +273,11 @@ impl State for Game {
         );
         tileset.execute(|tileset| {
             for tile in map.map.iter() {
-                if let Some(image) = tileset.get(&tile.ch) {
+                if let Some(image) = tileset.get(&tile.get_display_ch()) {
                     let pos_px = tile.pos.times(tile_size_px);
                     window.draw(
                         &Rectangle::new(offset_px + pos_px, image.area().size()),
-                        Blended(&image, tile.color),
+                        Blended(&image, tile.get_display_color()),
                     );
                 }
             }
@@ -262,17 +300,32 @@ impl State for Game {
         //draw button controls
         self.controls.execute(|image| {
             window.draw(
-                &image
-                    .area()
-                    .with_center((window.screen_size().x as i32 - 100, window.screen_size().y as i32 - 100)),
+                &image.area().with_center((
+                    window.screen_size().x as i32 - 100,
+                    window.screen_size().y as i32 - 100,
+                )),
                 Img(&image),
             );
             Ok(())
         })?;
 
+        //draw store ???
+        if self.store.is_active {
+            self.store_asset.execute(|image| {
+                window.draw(
+                    &image.area().with_center((
+                        window.screen_size().x as i32 - 150,
+                        window.screen_size().y as i32 - 250,
+                    )),
+                    Img(&image),
+                );
+                Ok(())
+            })?;
+        }
+
         let p1 = &self.player;
         let max_bar = 100.0;
-        let curr_power = p1.energy;//add checks
+        let curr_power = p1.energy; //add checks
         let curr_money = p1.money; // xxx make min/max
         let power_bar_pos_px = offset_px + Vector::new(map_size_px.x, 0.0);
         let money_bar_pos_px = offset_px + Vector::new(map_size_px.x, tile_size_px.y);
@@ -295,44 +348,59 @@ impl State for Game {
             &Rectangle::new(money_bar_pos_px, (curr_money, tile_size_px.y)),
             Col(Color::GREEN),
         );
+
+        //msg alert for wasm page xxx
+        let act_width_px = if self.display_msg {
+            tile_size_px.x
+        } else {
+            0.0
+        };
+
+        window.draw(
+            &Rectangle::new(
+                money_bar_pos_px + tile_size_px,
+                (act_width_px, tile_size_px.y),
+            ),
+            Col(Color::BLUE),
+        );
         //draw inventory
         let font_mono = "FreeMono.ttf"; // xxx new font
         let mut player_bag = "Inventory:\n".to_string();
         player_bag.push_str(&self.player.contents_to_string());
-        let mut inventory = Asset::new(Font::load(font_mono).and_then(move |font| {
-            font.render(
-                &player_bag,
-                &FontStyle::new(20.0, Color::BLACK),
-            )
-        }));
+        let mut inventory =
+            Asset::new(Font::load(font_mono).and_then(move |font| {
+                font.render(&player_bag, &FontStyle::new(20.0, Color::BLACK))
+            }));
         inventory.execute(|image| {
             window.draw(
-                &image.area()
-                .translate(inventory_pos_px),
+                // &image.area()
+                // .translate(inventory_pos_px),
+                &Rectangle::new(inventory_pos_px, image.area().size()),
                 Img(&image),
             );
             Ok(())
         })?;
         //draw msg, if exists
+        let mut missing = "Missing: ".to_string();
+        missing.push_str(&self.msg);
+
+        //let miss_clone = self.msg.clone();
+        self.msg_asset = Asset::new(
+            Font::load(font_mono)
+                .and_then(move |font| font.render(&missing, &FontStyle::new(20.0, Color::BLACK))),
+        );
         if self.display_msg {
-            let mut missing = "Missing: ".to_string();
-            missing.push_str(&self.msg);
-            let mut missing_asset = Asset::new(Font::load(font_mono).and_then(move |font| {
-                font.render(
-                    &missing,
-                    &FontStyle::new(20.0, Color::BLACK),
-                )
-            }));
-            missing_asset.execute(|image| {
+            self.msg_asset.execute(|image| {
                 window.draw(
-                    &image.area()
-                    .with_center((window.screen_size().x as i32 / 2, 80)),
+                    &image
+                        .area()
+                        .with_center((window.screen_size().x as i32 / 2, 80)),
                     Img(&image),
                 );
                 Ok(())
             })?;
-        }//msg
-        
+        } //msg
+
         //
         Ok(())
     }
@@ -342,16 +410,17 @@ impl State for Game {
 impl Game {
     //dump stats to terminal on move xxx
     pub fn dump_stats(&self) {
-        println!("\nPpos: {} - {}\nTpos: {} - {} id: {}  seen: {}\npow: {}\nmoney: {}\n",  
-        self.player.pos.x, self.player.pos.y,
-        self.map.get_tile(&self.player.pos).pos.x,
-        self.map.get_tile(&self.player.pos).pos.y,
-        self.map.get_tile(&self.player.pos).id,
-        self.map.get_tile(&self.player.pos).seen,
-        self.player.energy,
-        self.player.money
+        println!(
+            "\nPpos: {} - {}\nTpos: {} - {} id: {}  seen: {}\npow: {}\nmoney: {}\n",
+            self.player.pos.x,
+            self.player.pos.y,
+            self.map.get_tile(self.player.pos).pos.x,
+            self.map.get_tile(self.player.pos).pos.y,
+            self.map.get_tile(self.player.pos).id,
+            self.map.get_tile(self.player.pos).seen,
+            self.player.energy,
+            self.player.money
         );
     }
-
 }
 //tests or in test file
