@@ -9,7 +9,6 @@ extern crate quicksilver;
 
 pub mod game;
 
-
 fn main() {
     // call copied from qs:
     // NOTE: Set HIDPI to 1.0 to get pixel-perfect rendering.
@@ -27,7 +26,7 @@ fn main() {
 
     quicksilver::lifecycle::run::<game::Game>(
         "NKd",
-        quicksilver::geom::Vector::new(800, 600),//set size... 60fps
+        quicksilver::geom::Vector::new(800, 600), //set size... 60fps
         settings,
     );
 }
