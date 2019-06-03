@@ -36,6 +36,12 @@ impl Tile {
             }
             &'x'
         }
+    pub fn get_display_color(&self) -> Color {
+        if self.seen {
+            return self.color
+        }
+        Color::BLACK
+    }
     pub fn mod_tile(&mut self, tile_type: char, chance_val: i32, fare: i32, color: Color, reqs:Vec<String>) {
         self.ch = tile_type;
         self.chance_val = chance_val;
@@ -80,6 +86,7 @@ pub struct Map {
     pub size: Vector,
 }
 
+// make default/shrouded display char/color xxx
 impl Map {
     pub fn new(x: i32, y: i32) -> Map {
         Map {
@@ -113,12 +120,12 @@ impl Map {
     }
     pub fn get_tile(&self, pos: &Vector) -> &Tile { // option ???
         let mut i = 0.0; //make default reqs xxx ???
-        if self.is_on_board(*pos){
+        if self.is_on_board(pos){
             i = pos.y + pos.x * self.size.x; //must be usizable
         }      
         &self.map[i as usize]
     }
-    pub fn get_mut_tile(&mut self, pos: Vector) -> &mut Tile {
+    pub fn get_mut_tile(&mut self, pos: &Vector) -> &mut Tile {
         let mut i = 0.0;
         if self.is_on_board(pos) {
             i = pos.y + pos.x * self.size.x;
@@ -130,7 +137,7 @@ impl Map {
         (pos.y + pos.x * width) as usize
     }
 
-    pub fn is_on_board(&self, o_pos: Vector) -> bool { // make into vector trait ???
+    pub fn is_on_board(&self, o_pos: &Vector) -> bool { // make into vector trait ???
         (o_pos.x >= 0.0 && o_pos.x <= self.size.x - 1.0) &&
         (o_pos.y >= 0.0 && o_pos.y <= self.size.y - 1.0)
     }
@@ -146,56 +153,103 @@ impl Map {
         for x in 0..(dis*2 + 1) { //offset range nonneg
             for y in 0..(dis*2 + 1) {
                 let offset = Vector::new(x as i32 - dis,y as i32 - dis);// xxx
-                self.get_mut_tile(*pos + offset).set_seen(true);
+                self.get_mut_tile(&(*pos + offset)).set_seen(true);
             } 
         }
     }
 }
-#[test]
-fn test_is_on_board(){
-    let m = Map::new(10,10);
 
-    let p1 = m.is_on_board(Vector::new(0.0,0.0));
-    let p2 = m.is_on_board(Vector::new(9.0,9.0));
-    let p3 = m.is_on_board(Vector::new(5.0,5.0));
+#[cfg(test)]
+mod tests {
+    use super::*;
+    
+    #[test]
+    fn test_is_on_board(){
+        let m = Map::new(10,10);
 
-    let pf1 = m.is_on_board(Vector::new(-1.0,-1.0));
-    let pf2 = m.is_on_board(Vector::new(11.0,10.1));
-    let pf3 = m.is_on_board(Vector::new(5.0,15.0));
+        let p1 = m.is_on_board(&Vector::new(0.0,0.0));
+        let p2 = m.is_on_board(&Vector::new(9,9));
+        let p3 = m.is_on_board(&Vector::new(5.0,5.0));
 
-    assert_eq!((p1, p2, p3), (true, true, true));
-    assert_eq!((pf1,pf2,pf3),(false, false, false));
+        let pf1 = m.is_on_board(&Vector::new(-1.0,-1.0));
+        let pf2 = m.is_on_board(&Vector::new(9.0,9.1));
+        let pf3 = m.is_on_board(&Vector::new(5.0,15.0));
+
+         assert_eq!(p1 && p2 && p3, true);
+        assert_eq!(pf1 && pf2 && pf3, false);;
+    }
+    #[test]
+    fn test_is_on_board_x_y(){
+        let m = Map::new(10,10);
+
+        let p1 = m.is_on_board_x(0.0);
+        let p2 = m.is_on_board_x(9.0);
+        let p3 = m.is_on_board_x(5.0);
+
+        let pf1 = m.is_on_board_x(-1.0);
+        let pf2 = m.is_on_board_x(10.0);
+        let pf3 = m.is_on_board_x(100.1);
+
+        assert_eq!(p1 && p2 && p3, true);
+        assert_eq!(pf1 && pf2 && pf3, false);
+
+        let p1 = m.is_on_board_y(0.0);
+        let p2 = m.is_on_board_y(9.0);
+        let p3 = m.is_on_board_y(5.0);
+
+        let pf1 = m.is_on_board_y(-1.0);
+        let pf2 = m.is_on_board_y(10.0);
+        let pf3 = m.is_on_board_y(100.1);
+
+        assert_eq!(p1 && p2 && p3, true);
+        assert_eq!(pf1 && pf2 && pf3, false);
+    }
+
+    #[test]
+    fn test_shroud() {
+        let mut m = Map::gen(10,10);
+        //four corners
+        let (p1, p2, p3, p4) = (Vector::new(0,0),
+                                Vector::new(9,0),
+                                Vector::new(0,9),
+                                Vector::new(9,9)
+                                );
+        //3 away
+        let (p1a, p2a, p3a, p4a) = (Vector::new(3,0),
+                                    Vector::new(9,3),
+                                    Vector::new(3,9),
+                                    Vector::new(6,6)
+                                );
+
+        assert_eq!(m.get_tile(&p1).seen
+                && m.get_tile(&p2).seen
+                && m.get_tile(&p3).seen
+                && m.get_tile(&p4).seen
+                , false);
+        assert_eq!(m.get_tile(&p1a).seen
+                && m.get_tile(&p2a).seen
+                && m.get_tile(&p3a).seen
+                && m.get_tile(&p4a).seen
+                , false);
+        //unshroud four corners
+        m.unshroud_dis_x(&p1, 2);
+        m.unshroud_dis_x(&p2, 2);
+        m.unshroud_dis_x(&p3, 2);
+        m.unshroud_dis_x(&p4, 2);
+
+        assert_eq!(m.get_tile(&p1).seen
+                && m.get_tile(&p2).seen
+                && m.get_tile(&p3).seen
+                && m.get_tile(&p4).seen
+                , true); //points are seen
+        assert_eq!(m.get_tile(&p1a).seen
+                && m.get_tile(&p2a).seen
+                && m.get_tile(&p3a).seen
+                && m.get_tile(&p4a).seen
+                , false); //outside of range are not
+    
+
+    }
+    //test map gen
+    // 
 }
-#[test]
-fn test_is_on_board_x_y(){
-    let m = Map::new(10,10);
-
-    let p1 = m.is_on_board_x(0.0);
-    let p2 = m.is_on_board_x(9.0);
-    let p3 = m.is_on_board_x(5.0);
-
-    let pf1 = m.is_on_board_x(-1.0);
-    let pf2 = m.is_on_board_x(10.0);
-    let pf3 = m.is_on_board_x(100.1);
-
-    assert_eq!((p1, p2, p3), (true, true, true));
-    assert_eq!((pf1,pf2,pf3),(false, false, false));
-
-    let p1 = m.is_on_board_y(0.0);
-    let p2 = m.is_on_board_y(9.0);
-    let p3 = m.is_on_board_y(5.0);
-
-    let pf1 = m.is_on_board_y(-1.0);
-    let pf2 = m.is_on_board_y(10.0);
-    let pf3 = m.is_on_board_y(100.1);
-
-    assert_eq!((p1, p2, p3), (true, true, true));
-    assert_eq!((pf1,pf2,pf3),(false, false, false));
-}
-//test map gen
-// impl Iterator for Map {
-//     type item = Tile;
-//     fn next(&mut self)-> Option<Tile> {
-
-//     }
-// }

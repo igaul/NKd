@@ -135,28 +135,28 @@ impl State for Game {
 
         if window.keyboard()[Key::Left] == Pressed {//is down? {
             curr_pos.x -= 1.0;
-            if self.map.is_on_board(curr_pos) && self.player.can_move(&self.map.get_tile(&curr_pos)){ //compare tile requirements to player's items
+            if self.map.is_on_board(&curr_pos) && self.player.can_move(&self.map.get_tile(&curr_pos)){ //compare tile requirements to player's items
                 moved = true;
             }
             
         }
         if window.keyboard()[Key::Right] == Pressed {
             curr_pos.x += 1.0;
-            if self.map.is_on_board(curr_pos) && self.player.can_move(&self.map.get_tile(&curr_pos)){ //rewire to player bag to tile reqs ???
+            if self.map.is_on_board(&curr_pos) && self.player.can_move(&self.map.get_tile(&curr_pos)){ //rewire to player bag to tile reqs ???
                  moved = true;
             }
            
         }
         if window.keyboard()[Key::Up] == Pressed {
             curr_pos.y -= 1.0;
-            if self.map.is_on_board(curr_pos) && self.player.can_move(&self.map.get_tile(&curr_pos)) {
+            if self.map.is_on_board(&curr_pos) && self.player.can_move(&self.map.get_tile(&curr_pos)) {
                  moved = true;
             }
             
         }
         if window.keyboard()[Key::Down] == Pressed {
             curr_pos.y += 1.0;
-            if self.map.is_on_board(curr_pos) && self.player.can_move(&self.map.get_tile(&curr_pos)) {
+            if self.map.is_on_board(&curr_pos) && self.player.can_move(&self.map.get_tile(&curr_pos)) {
                  moved = true;
             }
         }
@@ -214,7 +214,8 @@ impl State for Game {
              self.msg.clear();
 
              //update tiles
-            self.map.unshroud_dis_x(&curr_pos, 2);
+            self.map.unshroud_dis_x(&curr_pos, 3); //sets tiles within range x to seen (they are displayed)
+            //print current state to terminal // xxx disable
             self.dump_stats();
         }
         else { //return missing item for display
@@ -276,7 +277,7 @@ impl State for Game {
                     let pos_px = tile.pos.times(tile_size_px);
                     window.draw(
                         &Rectangle::new(offset_px + pos_px, image.area().size()),
-                        Blended(&image, tile.color),
+                        Blended(&image, tile.get_display_color()),
                     );
                 }
             }

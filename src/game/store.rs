@@ -13,7 +13,7 @@ impl Store {
         Store{
             items: Bag::gen_bag_with_vals(
                 &vec![("Rope", 50),("Hammer", 25), 
-                ("ice cream", 15), ("face", 100)]
+                ("Ice Cream", 15), ("Face", 100)]
             ),
             is_active: false,
             //
