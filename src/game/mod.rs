@@ -14,6 +14,8 @@ pub struct Game {
     tileset: Asset<std::collections::HashMap<char, Image>>,
     tileset_upper: Asset<std::collections::HashMap<char, Image>>,
     pub player: player::Player, //vec players
+    //inventory: String, // use tileset to update?
+    inventory_asset: Asset<Image>, // xxx xxx switch to player. contents ...
     //tile_size_px: Vector,
     controls: Asset<Image>,
     msg: String,
@@ -46,10 +48,10 @@ impl State for Game {
 
         //store display
         let store = store::Store::gen_store();
-        let store_clone = store.clone();
+        let store_contents = store.contents_to_strings().join("\n");
         let store_asset = Asset::new(Font::load(font_mono).and_then(move |font| {
             font.render(
-                &store_clone.contents_to_strings().join("\n"),
+                &store_contents,
                 &FontStyle::new(20.0, Color::BLACK),
             )
         }));
@@ -72,6 +74,17 @@ impl State for Game {
         let mut player = player::Player::new();
         player.add_tool(&"Blue towel".to_string());
         // T ???
+        //inventory
+        let mut inventory = "Inventory:\n".to_string(); // xxx
+        inventory.push_str(&player.contents_to_string());
+        let inventory_asset = Asset::new(Font::load(font_mono).and_then(move |font| {
+            font.render(
+                &inventory,
+                &FontStyle::new(20.0, Color::BLACK),
+            )
+        }));
+
+
 
         let chs = "amoxl";
         let tile_size_px = Vector::new(10, 24);
@@ -109,6 +122,8 @@ impl State for Game {
             map,
             pic,
             player,
+            //inventory,
+            inventory_asset,
             tileset,
             tileset_upper,
             //tile_size_px,
@@ -208,6 +223,7 @@ impl State for Game {
             //self.map.get_mut_tile(curr_pos).seen = true;
             self.player.money += 5;
             self.display_msg = false;
+
             self.msg.clear();
 
             //update tiles
@@ -364,13 +380,25 @@ impl State for Game {
             Col(Color::BLUE),
         );
         //draw inventory
+        // xxx have to redraw text each update...
         let font_mono = "FreeMono.ttf"; // xxx new font
         let mut player_bag = "Inventory:\n".to_string();
         player_bag.push_str(&self.player.contents_to_string());
         let mut inventory =
+        //self.inventory_asset =
             Asset::new(Font::load(font_mono).and_then(move |font| {
                 font.render(&player_bag, &FontStyle::new(20.0, Color::BLACK))
             }));
+
+        self.inventory_asset.execute(|image| {
+            window.draw(
+                // &image.area()
+                // .translate(inventory_pos_px),
+                &Rectangle::new(inventory_pos_px, image.area().size()),
+                Img(&image),
+            );
+            Ok(())
+        })?;
         inventory.execute(|image| {
             window.draw(
                 // &image.area()
@@ -380,6 +408,7 @@ impl State for Game {
             );
             Ok(())
         })?;
+        
         //draw msg, if exists
         let mut missing = "Missing: ".to_string();
         missing.push_str(&self.msg);

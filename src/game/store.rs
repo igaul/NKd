@@ -2,6 +2,8 @@
 //store sells items to player
 //
 //
+// xxx make web interaction
+
 use super::item_bag::ItemBag as Bag;
 #[derive(Debug, Clone)]
 pub struct Store {
