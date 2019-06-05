@@ -40,7 +40,7 @@ To build for Ubuntu 18LTS targeting wasm you need:
     `cargo install cargo-web`
 * clone this repo (or download files)
 
-    `git clone https://github.com/igaul/rust-proj.git`
+    `git clone https://github.com/igaul/NKd.git`
 
 * compile
 
