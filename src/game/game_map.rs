@@ -162,7 +162,6 @@ impl Map {
     }
     //tiles to be unshrouded
     pub fn unshroud_dis_x(&mut self, pos: Vector, dis: i32) {
-        //let top_left = (pos.x - 2.0, pos.y - 2.0 );
         for x in 0..=dis * 2 {
             //offset range nonneg
             for y in 0..=dis * 2 {

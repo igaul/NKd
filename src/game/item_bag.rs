@@ -1,7 +1,7 @@
 //ItemBag
 //hashmap to hold items as name<string>:count<i32>
 //use std::collections::HashMap<String, i32> as bag_map;
-pub type Bag = std::collections::HashMap<String, i32>; //or str??
+pub type Bag = std::collections::HashMap<String, i32>;
 
 #[derive(Debug, Clone)]
 pub struct ItemBag {
@@ -41,7 +41,7 @@ impl ItemBag {
         }
     }
     //empty bag
-    pub fn empty_bag(mut self) {
+    pub fn empty_bag(&mut self) {
         self.bag.clear()
     }
     //insert
@@ -60,7 +60,7 @@ impl ItemBag {
             self.bag.remove(item);
         }
     }
-    //compare this to that, return first item this does not have or empty string //change to result ???
+    //compare this to that, return first item this does not have or empty string //change to option ???
     pub fn compare(&self, other: &Self) -> String {
         for k in self.bag.keys() {
             if other.bag.contains_key(k) {
@@ -71,7 +71,6 @@ impl ItemBag {
     }
     //compare to tile reqs ( vec<string> )
     pub fn compare_to_tile_reqs(&self, other: &[String]) -> String {
-        //change to result & match ???
         for k in other {
             if !self.contains(k) {
                 return k.to_string();
@@ -100,17 +99,49 @@ impl ItemBag {
         }
         m
     }
-
-    // #[test]
-    // fn test_contents_as_strings() {
-    //     let b = ItemBag::new();
-    //     b.add("red towel");
-    //     b.add("hamster");
-    //     let s = b.contents_as_strings();
-    //     assert_eq!(s,["red towel1","hamster1"]);
-    // }
-
-    // pub fn contents_to_string(&self) -> String {
-
-    // }
 }
+
+#[cfg(test)]
+    mod tests {
+        use super::*;
+    #[test]
+    fn test_item_bag() {
+        let mut b = ItemBag::new();
+        b.add("red towel");
+        b.add("hamster");
+        //copy contents as strings to test against sorted list
+        let mut c_as_s = b.contents_as_strings();
+        c_as_s.sort();
+        assert_eq!(b.count("red towel"),1);
+        assert_eq!(c_as_s,
+                    ["hamster: 1","red towel: 1"]);
+
+        b.add("red towel");
+        b.add("hamster");
+        let mut c_as_s = b.contents_as_strings();
+        c_as_s.sort();
+        assert_eq!(b.count("red towel"),2);
+        assert_eq!(c_as_s,
+                    ["hamster: 2","red towel: 2"]);
+
+        b.remove("red towel");
+        b.add("hamster");
+        let mut c_as_s = b.contents_as_strings();
+        c_as_s.sort();
+        assert_eq!(b.count("red towel"),1);
+        assert_eq!(c_as_s,
+                    ["hamster: 3","red towel: 1"]);
+
+        b.remove("red towel");
+        b.add("hamster");
+        assert_eq!(b.count("red towel"),0);
+        assert_eq!(b.contents_as_strings(),
+                    ["hamster: 4"]);
+
+        b.empty_bag();
+        assert_eq!(b.count("red towel"),0);
+        assert!(b.contents_as_strings().is_empty());
+    }
+}
+
+
