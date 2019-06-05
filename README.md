@@ -1,12 +1,11 @@
 # NKd
-#### sp19
 
 
 ### Topic Area:
 Game
 #
 ### Vision:
-Two-dimensional game with keyboard control using rust and web assembly. Player can move, interact with items, collect points, complete and maybe save levels. Beware of bees.
+Two-dimensional game with keyboard control using rust and web assembly. Player can move, interact with items, collect points, complete and possibly save levels. Beware of bees.
 #
 ### Credits
 Quicksilver [crate](https://crates.io/crates/quicksilver), and it's many dependancies, wasm and rust communities. 
