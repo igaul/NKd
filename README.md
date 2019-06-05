@@ -42,12 +42,17 @@ To build for Ubuntu 18LTS targeting wasm you need:
 
     `git clone https://github.com/igaul/NKd.git`
 
-#####Web
+
+##### Web browser
+
 
 * compile
 
     `cargo web start` to test locally (deploy to just build files)
-#####Linux
+
+
+##### Linux computer
+
 * compile
 
     `cargo run`
