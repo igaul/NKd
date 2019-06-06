@@ -37,49 +37,47 @@ impl Player {
         self.satchel.remove(tool)
     }
     pub fn contents_to_string(&self) -> String {
-        // let mut s = "".to_string();
-        // for (k,v) in self.satchel.contents() {
-
-        // }
         self.satchel.contents_as_strings().join("\n")
     }
     pub fn can_move(
         &self,
-        next: &super::game_map::Tile, /*&Vec<String>, fare: i32  */
+        next: &super::game_map::Tile,
     ) -> bool {
         println!(
             "item: {:?}\npos: {} - {}",
             self.satchel.compare_to_tile_reqs(&next.reqs),
             self.pos.x,
             self.pos.y
-        ); //xxx debug to terminal
+        ); // xxx debug to terminal
         if self.satchel.compare_to_tile_reqs(&next.reqs) == "" && self.energy >= next.fare {
             return true;
         }
         false
     }
 }
-// #[test]
-// fn test_can_move() {
 
-// }
+#[cfg(test)]
+    mod tests {
+        use super::*;
+    
 
-#[test]
-fn test_player_satchel_add_count() {
-    let mut player = Player::new();
-    let tool = "Blue Towel".to_string();
-    let tool1 = "Red Towel".to_string();
-    player.add_tool(&tool);
-    let has_tool = player.has_tool(&tool);
-    let tool_count = player.satchel.count(&tool);
-    assert_eq!(has_tool, true);
-    assert_eq!(tool_count, 1);
-    player.add_tool(&tool);
-    player.add_tool(&tool);
-    player.add_tool(&tool1);
-    player.add_tool(&tool1);
-    let tool_count = player.satchel.count(&tool);
-    assert_eq!(tool_count, 3);
-    let tool_count = player.satchel.count(&tool1);
-    assert_eq!(tool_count, 2);
+    #[test]
+    fn test_player_satchel_add_count() {
+        let mut player = Player::new();
+        let tool = "Blue Towel".to_string();
+        let tool1 = "Red Towel".to_string();
+        player.add_tool(&tool);
+        let has_tool = player.has_tool(&tool);
+        let tool_count = player.satchel.count(&tool);
+        assert_eq!(has_tool, true);
+        assert_eq!(tool_count, 1);
+        player.add_tool(&tool);
+        player.add_tool(&tool);
+        player.add_tool(&tool1);
+        player.add_tool(&tool1);
+        let tool_count = player.satchel.count(&tool);
+        assert_eq!(tool_count, 3);
+        let tool_count = player.satchel.count(&tool1);
+        assert_eq!(tool_count, 2);
+    }
 }

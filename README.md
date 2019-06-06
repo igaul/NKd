@@ -1,12 +1,11 @@
 # NKd
-#### sp19
 
 
 ### Topic Area:
 Game
 #
 ### Vision:
-Two-dimensional game with keyboard control using rust and web assembly. Player can move, interact with items, collect points, complete and maybe save levels. Beware of bees.
+Two-dimensional game with keyboard control using rust and web assembly. Player can move, interact with items, collect points, complete and possibly save levels. Beware of bees.
 #
 ### Credits
 Quicksilver [crate](https://crates.io/crates/quicksilver), and it's many dependancies, wasm and rust communities. 
@@ -40,11 +39,23 @@ To build for Ubuntu 18LTS targeting wasm you need:
     `cargo install cargo-web`
 * clone this repo (or download files)
 
-    `git clone https://github.com/igaul/rust-proj.git`
+    `git clone https://github.com/igaul/NKd.git`
+
+
+##### Web browser
+
 
 * compile
 
-    `cargo web start` to test locally (deploy to just build files)
+    `cargo web start` to test locally (`deploy` to just build files)
+
+
+##### Linux computer
+
+* compile
+
+    `cargo run --release`
     
 
-For other distros, good luck!(there are some dependancy conflicts)
+(For other distros there are some dependancy conflicts)
+Some features are only availible in cargo (rustc) compilation, not in browser version, such as inventory updates, due to rerendering image.
