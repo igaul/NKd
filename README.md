@@ -1,5 +1,6 @@
 # NKd
-
+#####
+A simple game to explore rust, wasm, and quicksilver.
 
 ### Topic Area:
 Game
@@ -59,3 +60,12 @@ To build for Ubuntu 18LTS targeting wasm you need:
 
 (For other distros there are some dependancy conflicts)
 Some features are only availible in cargo (rustc) compilation, not in browser version, such as inventory updates, due to rerendering image.
+
+##### Game Play
+Move around the board encountering obstacles and puzzles, searching for a gem on each level, collecting gem wins level.
+Helpful items can be purchased from the market.
+
+##### Current State
+Sticking with one codebase for native and browser forces some design changes along with inexperience creating games, the wasm version does not currently display missing items or full inventory as in linux version.
+
+Long term project goals include more levels, terrain, and chalanges, along with game menu and settings menu.
