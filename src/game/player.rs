@@ -20,7 +20,7 @@ impl Player {
             pos: Vector::new(10, 10), //rand or choose xxx
             ch: 'X',                  // xxx
             money: 50,
-            energy: 80,
+            energy: 100,
             name: "mike".to_string(), // make add
             satchel: Bag::new(),
             color: Color::RED,
@@ -43,12 +43,12 @@ impl Player {
         &self,
         next: &super::game_map::Tile,
     ) -> bool {
-        println!(
-            "item: {:?}\npos: {} - {}",
-            self.satchel.compare_to_tile_reqs(&next.reqs),
-            self.pos.x,
-            self.pos.y
-        ); // xxx debug to terminal
+        // println!(
+        //     "item: {:?}\npos: {} - {}",
+        //     self.satchel.compare_to_tile_reqs(&next.reqs),
+        //     self.pos.x,
+        //     self.pos.y
+        // ); // xxx debug to terminal
         if self.satchel.compare_to_tile_reqs(&next.reqs) == "" && self.energy >= next.fare {
             return true;
         }

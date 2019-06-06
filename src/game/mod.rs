@@ -39,7 +39,7 @@ impl State for Game {
         //controls
         let controls = Asset::new(Font::load(font_mono).and_then(move |font| {
             font.render(
-                "Conrols:\nUp: North\nDown: South\nLeft: East\nRight: West\nA/S: h\nZ/X: p\nW: act  R: rope\nEsc: quit",
+                "Conrols:\nUp: North\nDown: South\nLeft: East\nRight: West\nW: act  M: market\nEsc: quit",
                 &FontStyle::new(20.0, Color::BLACK),
             )
         }));
@@ -64,16 +64,16 @@ impl State for Game {
         //pic for experimenting
         let pic = Asset::new(Image::load("testimg1.png"));
         //map
-        let map = game_map::Map::gen(20, 20); // xxx use window size?
+        let map = game_map::Map::gen(25, 25); // xxx use window size?
                                               //characters
                                               //break up into fei
                                               // let mut players = Vec::<player::Player>::new();
                                               // players.push(player::Player::new())
         let mut player = player::Player::new();
         player.add_tool(&"Blue towel".to_string());
-        // T ???
-
-        let chs = "amoxlg";
+        // ttt ???
+        //based on tse example
+        let chs = "amoxwlg";
         let tile_size_px = Vector::new(10, 24);
         let tileset = Asset::new(Font::load(font_mono).and_then(move |text| {
             let tiles = text
@@ -176,6 +176,7 @@ impl State for Game {
         if window.keyboard()[Key::X] == Pressed {
             self.player.energy += 10; // xxx
         }
+        
         if window.keyboard()[Key::W] == Pressed {
             if self.player.act {
                 self.player.act = false;
@@ -183,7 +184,7 @@ impl State for Game {
                 self.player.act = true;
             }
         }
-        //activate store
+        //activate store window
         if window.keyboard()[Key::M] == Pressed {
             if self.store.is_active {
                 self.store.is_active = false;
@@ -193,9 +194,18 @@ impl State for Game {
         }
         if window.keyboard()[Key::R] == Pressed {
             // xxx add rope
-            if self.player.money >= 50 {
+            if self.store.purchase("(R)ope", &mut self.player.money)  {
                 self.player.add_tool(&"Rope".to_string());
-                self.player.money -= 50;
+            }
+        }
+        if window.keyboard()[Key::F] == Pressed {
+            if self.store.purchase("(F)ace", &mut self.player.money)  {
+                self.player.add_tool(&"Face".to_string());
+            }
+        }
+        if window.keyboard()[Key::B] == Pressed {
+            if self.store.purchase("(B)oat", &mut self.player.money)  {
+                self.player.add_tool(&"Boat".to_string());
             }
         }
         if window.keyboard()[Key::Escape].is_down() {
@@ -204,12 +214,14 @@ impl State for Game {
         //update player if move successful
         if moved {
             if self.map.get_tile(curr_pos).ch == 'g' {
-                self.map.win = true;
+                self.map.win = true; // xxx ???
+                window.close(); // xxx end game
+                //game won window, prompt to press esc to exit
             }
             self.player.pos = curr_pos;
             self.player.energy -= self.map.get_tile(curr_pos).fare;
             //self.map.get_mut_tile(curr_pos).seen = true;
-            self.player.money += 5;
+            self.player.money += self.map.get_tile(curr_pos).chance_val;
             self.display_msg = false;
             self.msg.clear();
 
@@ -264,6 +276,9 @@ impl State for Game {
             })?;
         }
 
+        // xxx 
+        // if won display game won ... and end or last on top of everything, prompt for esc
+
         // Draw map
         let tile_size_px = Vector::new(24, 24);
         let map_size_px = self.map.size.times(tile_size_px);
@@ -304,7 +319,7 @@ impl State for Game {
         self.controls.execute(|image| {
             window.draw(
                 &image.area().with_center((
-                    window.screen_size().x as i32 - 100,
+                    window.screen_size().x as i32 - 75,
                     window.screen_size().y as i32 - 100,
                 )),
                 Img(&image),
@@ -317,7 +332,7 @@ impl State for Game {
             self.store_asset.execute(|image| {
                 window.draw(
                     &image.area().with_center((
-                        window.screen_size().x as i32 - 150,
+                        window.screen_size().x as i32 - 75,
                         window.screen_size().y as i32 - 250,
                     )),
                     Img(&image),

@@ -12,10 +12,10 @@ impl Store {
     pub fn gen_store() -> Store {
         Store {
             items: Bag::gen_bag_with_vals(&vec![
-                ("Rope", 50),
-                ("Hammer", 25),
-                ("Ice Cream", 15),
-                ("Face", 100),
+                ("(R)ope", 50),
+                ("(H)ammer", 25),
+                ("(B)oat", 75),
+                ("(F)ace", 100),
             ]),
             is_active: false,
             //
@@ -24,7 +24,7 @@ impl Store {
     pub fn contents_to_strings(&self) -> Vec<String> {
         self.items.contents_as_strings()
     }
-    pub fn purchase(&self, item: &String, wallet: &mut i32) -> bool {
+    pub fn purchase(&self, item: &str, wallet: &mut i32) -> bool {
         if self.items.contains(item) && *wallet >= self.items.count(item) {
             *wallet -= self.items.count(item);
             true

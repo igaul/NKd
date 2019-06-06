@@ -1,6 +1,7 @@
 //map.rs
 //
 //
+use rand::random as rand;
 use quicksilver::{
     geom::Vector,
     graphics::Color,
@@ -65,8 +66,8 @@ impl Tile {
         self.ch = tile_type;
         match tile_type {
             'x' => {
-                self.chance_val = 1;
-                self.fare = 2;
+                self.chance_val = rand::<u8>() as i32 % 10; //keep range < 256
+                self.fare = rand::<u8>() as i32 % 10;
                 self.color = Color::from_hex("#006400"); //dark green
                 self.reqs.push("Blue towel".to_string());
             }
@@ -79,11 +80,18 @@ impl Tile {
                 self.color = Color::from_hex("#A52A2A"); //brown ish
                 self.reqs.push("Rope".to_string())
             }
+            'w' => {
+                self.color = Color::BLUE;
+                self.reqs.push("Boat".to_string());
+            }
             'o' => {
                 self.color = Color::ORANGE;
                 self.reqs.push("Orange towel".to_string());
             }
             'g' => {
+                println!("{}", rand::<u8>());
+                println!("{}", rand::<u8>() % 10);
+                println!("{}", rand::<u8>() / 100);
                 self.fare = 10;
                 self.color = Color::from_hex("#FFD700"); //gold ish
             }
@@ -118,17 +126,18 @@ impl Map {
                 let pos = Vector::new(i, j);
                 let id = i + j * x;
                 let mut t = Tile::new(pos, id);
-
+                let r = rand::<u8>() % 10;
                 if i == 0 || i == x - 1 {
                     t.auto_mod_tile('l');
                 } else if j == 0 || j == y - 1 {
                     t.auto_mod_tile('o');
-                } else if (i * j) % 11 == 2 {
-                    // xxx make rand
-                    t.auto_mod_tile('m');
-                } else if id / i == 30 {
+                } else if r % 11 == 2 {
+                    t.auto_mod_tile('w');
+                } else if r > 100 {
+                    t.auto_mod_tile('m')
+                } else if r == 80 {
                     t.auto_mod_tile('g')
-                }else {
+                } else {
                     t.auto_mod_tile('x');
                 }
 

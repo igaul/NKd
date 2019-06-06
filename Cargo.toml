@@ -5,4 +5,5 @@ authors = ["gaul <gaul@pdx.edu>"]
 edition = "2018"
 
 [dependencies]
+rand = "*"
 quicksilver = { version = "0.3.10", default-features = false, features = ["fonts"]}
