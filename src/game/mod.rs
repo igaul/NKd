@@ -21,6 +21,7 @@ pub struct Game {
     msg_asset: Asset<Image>,
     store: store::Store,
     store_asset: Asset<Image>,
+    bees: Asset<Image>,
     //inventory: Asset<Image>,
     //...
 }
@@ -63,6 +64,7 @@ impl State for Game {
             }));
         //pic for experimenting
         let pic = Asset::new(Image::load("testimg1.png"));
+        let bees = Asset::new(Image::load("bees.jpeg"));
         //map
         let map = game_map::Map::gen(25, 25); // xxx use window size?
                                               //characters
@@ -118,6 +120,7 @@ impl State for Game {
             msg_asset,
             store,
             store_asset,
+            bees,
         })
     }
 
@@ -402,7 +405,6 @@ impl State for Game {
         let mut missing = "Missing: ".to_string();
         missing.push_str(&self.msg);
 
-        //let miss_clone = self.msg.clone();
         self.msg_asset = Asset::new(
             Font::load(font_mono)
                 .and_then(move |font| font.render(&missing, &FontStyle::new(20.0, Color::BLACK))),
@@ -418,6 +420,19 @@ impl State for Game {
                 Ok(())
             })?;
         } //msg
+
+        // draw bees on top
+        if self.display_msg && self.player.act {
+            self.bees.execute(|image| {
+                window.draw(
+                    &image
+                        .area()
+                        .with_center((window.screen_size().x as i32 / 2, window.screen_size().y as i32 / 2)),
+                    Img(&image),
+                );
+                Ok(())
+            })?;
+        } 
 
         //
         Ok(())
