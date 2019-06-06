@@ -16,6 +16,7 @@ pub struct Tile {
     pub seen: bool,      // tile seen by player
     pub color: Color,    //replace with sprite ???
     pub reqs: Vec<String>, // required items to enter/traverse tile
+    
 
     //...
 }
@@ -31,6 +32,7 @@ impl Tile {
             seen: false,
             color: Color::BLACK,
             reqs: Vec::<String>::with_capacity(0),
+            
         }
     }
     pub fn get_display_ch(&self) -> &char {
@@ -81,6 +83,10 @@ impl Tile {
                 self.color = Color::ORANGE;
                 self.reqs.push("Orange towel".to_string());
             }
+            'g' => {
+                self.fare = 10;
+                self.color = Color::from_hex("#FFD700"); //gold ish
+            }
             _ => {}
         };
     }
@@ -93,6 +99,7 @@ impl Tile {
 pub struct Map {
     pub map: Vec<Tile>, //???
     pub size: Vector,
+    pub win: bool,
 }
 
 // make default/shrouded display char/color xxx
@@ -101,6 +108,7 @@ impl Map {
         Map {
             size: Vector::new(x, y),
             map: Vec::with_capacity((x * y) as usize),
+            win: false,
         }
     }
     pub fn gen(x: i32, y: i32) -> Map {
@@ -118,7 +126,9 @@ impl Map {
                 } else if (i * j) % 11 == 2 {
                     // xxx make rand
                     t.auto_mod_tile('m');
-                } else {
+                } else if id / i == 30 {
+                    t.auto_mod_tile('g')
+                }else {
                     t.auto_mod_tile('x');
                 }
 
@@ -128,20 +138,18 @@ impl Map {
         m
     }
     pub fn get_tile(&self, pos: Vector) -> &Tile {
-        // option ???
-        let mut i = 0.0; //make default reqs xxx ???
         if self.is_on_board(pos) {
-            i = pos.y + pos.x * self.size.x; //must be usizable
-        }
-        &self.map[i as usize]
+            //if valid vector position, return tile from map's vec of tiles
+            return &self.map[(pos.y + pos.x * self.size.x) as usize] //must be usizable
+        } //else return tile 0 as default
+        return &self.map[0]
     }
-    pub fn get_mut_tile(&mut self, pos: Vector) -> &mut Tile {
-        let i = if self.is_on_board(pos) {
-            pos.y + pos.x * self.size.x
-        } else {
-            0.0
-        };
-        &mut self.map[i as usize]
+    pub fn get_mut_tile(&mut self, pos: Vector) -> Option<&mut Tile> {
+        if self.is_on_board(pos) {
+            Some(&mut self.map[(pos.y + pos.x * self.size.x) as usize])
+        } 
+        else {//return none
+        None }
     }
 
     pub fn pos_to_tile_id(pos: Vector, width: f32) -> usize {
@@ -166,7 +174,10 @@ impl Map {
             //offset range nonneg
             for y in 0..=dis * 2 {
                 let offset = Vector::new(x as i32 - dis, y as i32 - dis); // xxx
-                self.get_mut_tile(pos + offset).set_seen(true);
+                match self.get_mut_tile(pos + offset) {
+                    Some(t) => t.set_seen(true),
+                    None => (),
+                }
             }
         }
     }

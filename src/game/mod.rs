@@ -73,7 +73,7 @@ impl State for Game {
         player.add_tool(&"Blue towel".to_string());
         // T ???
 
-        let chs = "amoxl";
+        let chs = "amoxlg";
         let tile_size_px = Vector::new(10, 24);
         let tileset = Asset::new(Font::load(font_mono).and_then(move |text| {
             let tiles = text
@@ -203,6 +203,9 @@ impl State for Game {
         }
         //update player if move successful
         if moved {
+            if self.map.get_tile(curr_pos).ch == 'g' {
+                self.map.win = true;
+            }
             self.player.pos = curr_pos;
             self.player.energy -= self.map.get_tile(curr_pos).fare;
             //self.map.get_mut_tile(curr_pos).seen = true;
@@ -411,7 +414,8 @@ impl Game {
     //dump stats to terminal on move xxx
     pub fn dump_stats(&self) {
         println!(
-            "\nPpos: {} - {}\nTpos: {} - {} id: {}  seen: {}\npow: {}\nmoney: {}\n",
+            "win: {}\nPpos: {} - {}\nTpos: {} - {} id: {}  seen: {}\npow: {}\nmoney: {}\n",
+            self.map.win,
             self.player.pos.x,
             self.player.pos.y,
             self.map.get_tile(self.player.pos).pos.x,

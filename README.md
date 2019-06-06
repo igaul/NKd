@@ -47,14 +47,15 @@ To build for Ubuntu 18LTS targeting wasm you need:
 
 * compile
 
-    `cargo web start` to test locally (deploy to just build files)
+    `cargo web start` to test locally (`deploy` to just build files)
 
 
 ##### Linux computer
 
 * compile
 
-    `cargo run`
+    `cargo run --release`
     
 
 (For other distros there are some dependancy conflicts)
+Some features are only availible in cargo (rustc) compilation, not in browser version, such as inventory updates, due to rerendering image.
