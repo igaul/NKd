@@ -66,6 +66,7 @@ Move around the board encountering obstacles and puzzles, searching for a gem on
 Helpful items can be purchased from the market.
 
 ##### Current State
-Sticking with one codebase for native and browser forces some design changes along with inexperience creating games, the wasm version does not currently display missing items or full inventory as in linux version.
+Sticking with one codebase for native and browser forces some design changes along with inexperience creating games, the wasm version does not currently display missing items or full inventory as in linux version. Was not able to make Atlas functional.
 
 Long term project goals include more levels, terrain, and chalanges, along with game menu and settings menu. Making separate pages(menu, game, win/lose), etc...
+
