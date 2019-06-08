@@ -1,10 +1,6 @@
 //main
-//
-//
-//
-//
-////
-///
+//calls game from game/mod.rs
+
 extern crate quicksilver;
 
 pub mod game;

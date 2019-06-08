@@ -18,9 +18,9 @@ impl Player {
     pub fn new() -> Player {
         Player {
             pos: Vector::new(10, 10), //rand or choose xxx
-            ch: 'X',                  // xxx
+            ch: 'x',                  // xxx
             money: 50,
-            energy: 100,
+            energy: 150,
             name: "mike".to_string(), // make add
             satchel: Bag::new(),
             color: Color::RED,
@@ -43,12 +43,6 @@ impl Player {
         &self,
         next: &super::game_map::Tile,
     ) -> bool {
-        // println!(
-        //     "item: {:?}\npos: {} - {}",
-        //     self.satchel.compare_to_tile_reqs(&next.reqs),
-        //     self.pos.x,
-        //     self.pos.y
-        // ); // xxx debug to terminal
         if self.satchel.compare_to_tile_reqs(&next.reqs) == "" && self.energy >= next.fare {
             return true;
         }

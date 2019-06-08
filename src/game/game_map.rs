@@ -89,10 +89,7 @@ impl Tile {
                 self.reqs.push("Orange towel".to_string());
             }
             'g' => {
-                println!("{}", rand::<u8>());
-                println!("{}", rand::<u8>() % 10);
-                println!("{}", rand::<u8>() / 100);
-                self.fare = 10;
+                self.fare = 0;
                 self.color = Color::from_hex("#FFD700"); //gold ish
             }
             _ => {}
@@ -105,7 +102,7 @@ impl Tile {
 }
 
 pub struct Map {
-    pub map: Vec<Tile>, //???
+    pub map: Vec<Tile>, 
     pub size: Vector,
     pub win: bool,
 }
@@ -133,9 +130,9 @@ impl Map {
                     t.auto_mod_tile('o');
                 } else if r % 11 == 2 {
                     t.auto_mod_tile('w');
-                } else if r > 100 {
+                } else if r % 11 == 3 {
                     t.auto_mod_tile('m')
-                } else if r == 80 {
+                } else if id == 80 {
                     t.auto_mod_tile('g')
                 } else {
                     t.auto_mod_tile('x');

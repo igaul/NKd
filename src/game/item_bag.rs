@@ -1,6 +1,5 @@
 //ItemBag
-//hashmap to hold items as name<string>:count<i32>
-//use std::collections::HashMap<String, i32> as bag_map;
+// hashmap for holding inventory
 pub type Bag = std::collections::HashMap<String, i32>;
 
 #[derive(Debug, Clone)]

@@ -12,7 +12,6 @@ pub struct Game {
     pub map: game_map::Map,
     pic: Asset<Image>,
     tileset: Asset<std::collections::HashMap<char, Image>>,
-    tileset_upper: Asset<std::collections::HashMap<char, Image>>,
     pub player: player::Player, //vec players
     //tile_size_px: Vector,
     controls: Asset<Image>,
@@ -22,8 +21,6 @@ pub struct Game {
     store: store::Store,
     store_asset: Asset<Image>,
     bees: Asset<Image>,
-    //inventory: Asset<Image>,
-    //...
 }
 
 impl State for Game {
@@ -89,22 +86,8 @@ impl State for Game {
             }
             Ok(tileset)
         }));
-        let chs = "XALMO";
-        let tile_size_px = Vector::new(10, 24);
-        let tileset_upper = Asset::new(Font::load(font_mono).and_then(move |text| {
-            let tiles = text
-                .render(chs, &FontStyle::new(tile_size_px.y, Color::WHITE))
-                .expect("Could not render the font tileset.");
-            let mut tileset = std::collections::HashMap::new();
-            for (index, glyph) in chs.chars().enumerate() {
-                let pos = (index as i32 * tile_size_px.x as i32, 0);
-                let tile = tiles.subimage(Rectangle::new(pos, tile_size_px));
-                tileset.insert(glyph, tile);
-            }
-            Ok(tileset)
-        }));
-
-        //inventory ??? or elsewhere
+    
+      
 
         Ok(Self {
             title,
@@ -112,8 +95,6 @@ impl State for Game {
             pic,
             player,
             tileset,
-            tileset_upper,
-            //tile_size_px,
             controls,
             msg,
             display_msg,
@@ -124,7 +105,7 @@ impl State for Game {
         })
     }
 
-    /// Process keyboard update the game state //move to player ???
+    // Process keyboard update the game state
     fn update(&mut self, window: &mut Window) -> Result<()> {
         use ButtonState::*;
         let mut curr_pos = self.player.pos;
@@ -248,7 +229,6 @@ impl State for Game {
         Ok(()) //ret ok void
     }
 
-    //...
     ///draw everything
 
     fn draw(&mut self, window: &mut Window) -> Result<()> {
@@ -279,7 +259,6 @@ impl State for Game {
             })?;
         }
 
-        // xxx 
         // if won display game won ... and end or last on top of everything, prompt for esc
 
         // Draw map
@@ -306,7 +285,7 @@ impl State for Game {
         })?;
 
         //Draw Player
-        let (tileset, p1) = (&mut self.tileset_upper, &self.player);
+        let (tileset, p1) = (&mut self.tileset, &self.player);
         tileset.execute(|tileset| {
             if let Some(image) = tileset.get(&p1.ch) {
                 let pos_px = offset_px + p1.pos.times(tile_size_px);
@@ -437,8 +416,7 @@ impl State for Game {
         //
         Ok(())
     }
-}
-//end impl state for game
+}//impl state for game
 
 impl Game {
     //dump stats to terminal on move xxx
@@ -457,4 +435,4 @@ impl Game {
         );
     }
 }
-//tests or in test file
+

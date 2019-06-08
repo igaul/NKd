@@ -34,5 +34,4 @@ impl Store {
     }
 }
 //purchase menu, game control
-//tests
 //collaspe into mod ???
