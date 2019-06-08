@@ -65,6 +65,8 @@ Some features are only availible in cargo (rustc) compilation, not in browser ve
 Move around the board encountering obstacles and puzzles, searching for a gem on each level, collecting gem wins level.
 Helpful items can be purchased from the market.
 
+For playing demo level: 'x' and 's' increase money and energy, 'm' pops up market, press key to purchase item
+
 ##### Current State
 Sticking with one codebase for native and browser forces some design changes along with inexperience creating games, the wasm version does not currently display missing items or full inventory as in linux version. Was not able to make Atlas functional.
 
