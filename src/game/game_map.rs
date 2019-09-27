@@ -10,12 +10,12 @@ use quicksilver::{
 #[derive(Clone, Debug, PartialEq, Default)]
 pub struct Tile {
     pub pos: Vector,
-    pub id: i32,         //if useful for type
+    pub id: i32,         // tile type code
     pub ch: char,        //for display during development
     pub chance_val: i32, //
     pub fare: i32,       // cost to cross tile
     pub seen: bool,      // tile seen by player
-    pub color: Color,    //replace with sprite ???
+    pub color: Color,    //replace with sprite 
     pub reqs: Vec<String>, // required items to enter/traverse tile
     
 
